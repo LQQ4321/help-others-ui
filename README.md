@@ -1,4 +1,4 @@
-# help_them
+# help_others
 
 A new Flutter project.
 
