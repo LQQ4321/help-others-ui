@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/pages/bodys/seekHelpList.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -7,7 +8,20 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _TopBar(),
+        const _TopBar(),
+        Expanded(
+            child: Container(
+          color: const Color(0xfff6f6f6),
+          padding:
+              const EdgeInsets.only(right: 50, left: 50, top: 20, bottom: 20),
+          child: Builder(
+            builder: (BuildContext context) {
+              if (true) {
+                return const SeekHelpList();
+              }
+            },
+          ),
+        ))
       ],
     );
   }
@@ -59,7 +73,10 @@ class _TopBar extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(onPressed: (){}, splashRadius: 20,icon: Icon(Icons.person_outline)),
+                IconButton(
+                    onPressed: () {},
+                    splashRadius: 20,
+                    icon: Icon(Icons.person_outline)),
                 const SizedBox(width: 10),
               ],
             ),

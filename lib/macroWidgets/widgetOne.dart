@@ -1,6 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+class MyPopupMenu extends StatefulWidget {
+  const MyPopupMenu(
+      {Key? key,
+      required this.list,
+      required this.callBack,
+      this.iconData = Icons.keyboard_arrow_down_sharp})
+      : super(key: key);
+  final List<String> list;
+  final Function(int) callBack;
+  final IconData iconData;
+
+  @override
+  State<MyPopupMenu> createState() => _MyPopupMenuState();
+}
+
+class _MyPopupMenuState extends State<MyPopupMenu> {
+  int _item = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+        initialValue: _item,
+        onSelected: (int item) {
+          setState(() {
+            _item = item;
+          });
+          widget.callBack(item);
+        },
+        tooltip: '',
+        child: Container(
+          height: 30,
+          padding: const EdgeInsets.only(left: 5, right: 5),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.black12)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.list[_item],
+                style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+              Icon(
+                widget.iconData,
+                color: Colors.black,
+              )
+            ],
+          ),
+        ),
+        itemBuilder: (BuildContext context) {
+          return List.generate(widget.list.length, (index) {
+            return PopupMenuItem<int>(
+                value: index, child: Text(widget.list[index]));
+          });
+        });
+  }
+}
+
+//一个圆角输入框，左侧可以添加一个图标
+// (输入回车键后，textEditingController的text可能会被清空，
+// 这取决于setState被调用后，textEditingController是否在刷新页面的内部被初始化)
+class FilletCornerInput extends StatefulWidget {
+  const FilletCornerInput(
+      {Key? key,
+      required this.textEditingController,
+      this.iconData = Icons.search,
+      required this.hintText,
+      required this.callBack})
+      : super(key: key);
+  final IconData iconData;
+  final TextEditingController textEditingController;
+  final String hintText;
+  final Function(String) callBack;
+
+  @override
+  State<FilletCornerInput> createState() => _FilletCornerInputState();
+}
+
+class _FilletCornerInputState extends State<FilletCornerInput> {
+  Color _color = Colors.black12;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: _color),
+          borderRadius: BorderRadius.circular(4)),
+      child: Focus(
+        onFocusChange: (hasFocus) {
+          setState(() {
+            if (hasFocus) {
+              _color = Colors.black; //到底什么情况下Colors.red[200]会是空呢？？？
+            } else {
+              _color = Colors.black12;
+            }
+          });
+        },
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(right: 10, left: 10),
+              child: Icon(widget.iconData),
+            ),
+            Expanded(
+                child: Container(
+              margin: const EdgeInsets.only(bottom: 7),
+              child: TextField(
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+                maxLength: 50,
+                maxLines: 1,
+                controller: widget.textEditingController,
+                onSubmitted: (value) {
+                  widget.callBack(value);
+                  //不判断是否为空了，这样上层的数据处理就会更加灵活
+                  // if (value.isNotEmpty) {
+                  //   widget.callBack(value);
+                  // }
+                },
+                decoration: InputDecoration(
+                  counterText: '',
+                  border: InputBorder.none,
+                  //如果输入内容为空，就显示提示信息，反之显示输入内容
+                  hintText: widget.textEditingController.text.isEmpty
+                      ? widget.hintText
+                      : widget.textEditingController.text,
+                  hintStyle: const TextStyle(color: Colors.black38),
+                ),
+              ),
+            ))
+          ],
+        ),
+      ),
+    );
+    ;
+  }
+}
+
 //一个矩形的数据框
 class RectangleInput extends StatefulWidget {
   final TextEditingController textEditingController;
