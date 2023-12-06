@@ -49,23 +49,7 @@ class _TopBarState extends State<_TopBar> {
               textEditingController: _textEditingController,
               callBack: (a) {},
               hintText: 'Search help seeker'),
-        ),
-        const SizedBox(width: 50),
-        SizedBox(
-          width: 150,
-          height: 35,
-          child: MyPopupMenu(
-              list: const ['All', 'Resolved', 'Unsolved'], callBack: (a) {}),
-        ),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 150,
-          height: 35,
-          child: MyPopupMenu(
-              list: const ['High score', 'Low score'],
-              iconData: Icons.sort,
-              callBack: (a) {}),
-        ),
+        )
       ],
     );
   }
@@ -100,7 +84,7 @@ class _BodyTopTitle extends StatelessWidget {
   _BodyTopTitle({Key? key}) : super(key: key);
 
   List<String> titleList = ['Status', 'Score', 'Like', 'Help time', 'Language'];
-  List<int> proportion = [4, 3, 3, 5, 3];
+  List<int> proportion = [1, 1, 1, 1, 1];
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +93,7 @@ class _BodyTopTitle extends StatelessWidget {
       titleList.addAll(['']);
     }
     return Container(
-      height: 40,
+      height: 50,
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.black12))),
       child: Row(
@@ -135,13 +119,17 @@ class _BodyTopTitle extends StatelessWidget {
             child: Row(
               children: List.generate(titleList.length, (index) {
                 return Expanded(
-                  flex: proportion[index],
-                  child: Text(
-                    titleList[index],
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w900, fontSize: 13),
-                  ),
-                );
+                    flex: proportion[index],
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        width: 130,
+                        child: MyPopupMenu(
+                            list: const ['High score', 'Low score'],
+                            iconData: Icons.sort,
+                            callBack: (a) {}),
+                      ),
+                    ));
               }),
             ),
           ))
@@ -160,7 +148,7 @@ class _BodyInternalList extends StatefulWidget {
 
 class _BodyInternalListState extends State<_BodyInternalList> {
   List<String> titleList = ['Status', 'Score', 'Like', 'Help time', 'Language'];
-  List<int> proportion = [4, 3, 3, 5, 3];
+  List<int> proportion = [1, 1, 1, 1, 1];
 
   @override
   Widget build(BuildContext context) {

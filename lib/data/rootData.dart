@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'dart:html' as html;
 
+import 'package:help_them/data/seekHelp.dart';
+
 //我们肯定不能将所有的notifyListeners()全部放到一个class里面，所以就需要就进行拆分。
 //但是拆分后他们还是有联系的，也就是互相依赖的意思
 //那么现在就有两种方法使他们联系在一起
@@ -17,6 +19,14 @@ class RootDataModel extends ChangeNotifier {
   bool isLogin = false;
   LocalStorageData localStorageData = LocalStorageData();
 
+  late bool isManager; //是否是管理员
+  late int loginDuration; //每次最多可以登录的时间，单位是小时
+  late DateTime loginTime; //登录时间，超过规定时间就应该
+  late int ban; //改名用户的权限
+
+  SeekHelpModel seekHelpModel = SeekHelpModel();
+
+
   void initWebsite() {
     localStorageData.init();
     notifyListeners();
@@ -26,11 +36,6 @@ class RootDataModel extends ChangeNotifier {
     localStorageData.rememberMe = !localStorageData.rememberMe;
     notifyListeners();
   }
-
-  late bool isManager; //是否是管理员
-  late int loginDuration; //每次最多可以登录的时间，单位是小时
-  late DateTime loginTime; //登录时间，超过规定时间就应该
-  late int ban; //改名用户的权限
 
   // 0 登录成功 1 输入格式错误(包含一个空格或为空) 2 用户名不存在或密码错误
   Future<int> login(String name, String password) async {
@@ -55,6 +60,7 @@ class RootDataModel extends ChangeNotifier {
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       return value.data[Config.status] == Config.succeedStatus ? 0 : 2;
     }).onError((error, stackTrace) {
+      debugPrint(error.toString());
       return 2;
     });
     if (flag == 0) {

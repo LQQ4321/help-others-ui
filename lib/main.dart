@@ -15,6 +15,7 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: rootDataModel),
+      ChangeNotifierProvider.value(value: rootDataModel.seekHelpModel),
     ],
     child: const MyApp(),
   ));
@@ -30,9 +31,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: Scaffold(
-        body: Home()//Login(),
-      ),
+      home: Scaffold(body: Home() //Login(),
+          ),
     );
   }
 }

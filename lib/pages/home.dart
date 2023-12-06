@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/config.dart';
+import 'package:help_them/data/rootData.dart';
+import 'package:help_them/data/seekHelp.dart';
+import 'package:help_them/pages/bodys/seekAHelp.dart';
 import 'package:help_them/pages/bodys/seekHelpList.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,7 +22,8 @@ class Home extends StatelessWidget {
           child: Builder(
             builder: (BuildContext context) {
               if (true) {
-                return const SeekHelpList();
+                return const SeekAHelp();
+                // return const SeekHelpList();
               }
             },
           ),
@@ -64,7 +70,7 @@ class _TopBar extends StatelessWidget {
                       (states) => Colors.grey[200]!)),
               child: Text(
                 '2023-07-10',
-                style: TextStyle(color: Colors.black45),
+                style: const TextStyle(color: Colors.black45),
               ),
             ),
           ),
@@ -74,9 +80,13 @@ class _TopBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Config.selectAFile(['png', 'jpg', 'jpeg']);
+                      // Config.selectAFile(['go', 'c', 'c++']);
+                      // context.read<SeekHelpModel>().requestSeekHelpList();
+                    },
                     splashRadius: 20,
-                    icon: Icon(Icons.person_outline)),
+                    icon: const Icon(Icons.person_outline)),
                 const SizedBox(width: 10),
               ],
             ),
