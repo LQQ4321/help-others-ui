@@ -6,11 +6,11 @@ import 'package:help_them/pages/login.dart';
 import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 
-void main() {
+void main() async {
   Config.dio.interceptors.add(RequestInterceptor());
 
   RootDataModel rootDataModel = RootDataModel();
-  rootDataModel.initWebsite();
+  await rootDataModel.initWebsite();
 
   runApp(MultiProvider(
     providers: [
@@ -31,8 +31,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: Scaffold(body: Home() //Login(),
-          ),
+      home: Scaffold(
+        body: context.watch<RootDataModel>().isLogin
+            ? const Home()
+            : const Login(),
+      ),
     );
   }
 }

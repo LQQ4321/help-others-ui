@@ -1,6 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+class DialogButtons extends StatefulWidget {
+  //list包含的数据[前两个按钮的文字，操作失败后的提示信息]
+  DialogButtons(
+      {Key? key,
+      required this.list,
+      required this.funcList,
+      this.confirmButtonColor = Colors.redAccent})
+      : super(key: key);
+  final List<String> list;
+  final Color confirmButtonColor;
+  List<Function> funcList;
+
+  @override
+  State<DialogButtons> createState() => _DialogButtonsState();
+}
+
+class _DialogButtonsState extends State<DialogButtons> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 60,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(const Size(100, 50)),
+                  backgroundColor: MaterialStateColor.resolveWith(
+                      (states) => const Color(0xfff0f9fe))),
+              child: Text(
+                widget.list[0],
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12),
+              )),
+          const SizedBox(width: 20),
+          ElevatedButton(
+              onPressed: () {
+                // if (!widget.funcList[0]()) {
+                //   MyDialogs.oneToast([widget.list[2], widget.list[3]],
+                //       infoStatus: 2, duration: 5);
+                //   return;
+                // }
+                widget.funcList[1](true);
+                Navigator.pop(context);
+              },
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateColor.resolveWith(
+                      (states) => widget.confirmButtonColor),
+                  minimumSize: MaterialStateProperty.all(const Size(100, 50))),
+              child: Text(
+                widget.list[1],
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
 class MyPopupMenu extends StatefulWidget {
   const MyPopupMenu(
       {Key? key,

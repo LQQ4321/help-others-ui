@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
+import 'package:provider/provider.dart';
 
 class SeekHelpList extends StatelessWidget {
   const SeekHelpList({Key? key}) : super(key: key);
@@ -35,20 +37,36 @@ class _TopBarState extends State<_TopBar> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text('Seek help list',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w900,
                 fontSize: 20)),
-        const SizedBox(width: 50),
-        SizedBox(
-          width: 200,
-          height: 40,
-          child: FilletCornerInput(
-              textEditingController: _textEditingController,
-              callBack: (a) {},
-              hintText: 'Search help seeker'),
+        // SizedBox(
+        //   width: 200,
+        //   height: 40,
+        //   child: FilletCornerInput(
+        //       textEditingController: _textEditingController,
+        //       callBack: (a) {},
+        //       hintText: 'Search help seeker'),
+        // ),
+        ClipOval(
+          child: Center(
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: TextButton(
+                  onPressed: () async {
+                    context.read<RootDataModel>().switchRoute(2);
+                  },
+                  child: const Icon(
+                    Icons.add_box,
+                    color: Colors.black38,
+                  )),
+            ),
+          ),
         )
       ],
     );

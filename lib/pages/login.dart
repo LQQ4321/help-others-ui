@@ -18,10 +18,12 @@ class LoginState extends State<Login> {
   void initState() {
     textEditingControllers =
         List.generate(2, (index) => TextEditingController());
-    textEditingControllers[0].text =
-        context.read<RootDataModel>().localStorageData.name;
-    textEditingControllers[1].text =
-        context.read<RootDataModel>().localStorageData.password;
+    if (context.read<RootDataModel>().userData.rememberMe) {
+      textEditingControllers[0].text =
+          context.read<RootDataModel>().userData.name;
+      textEditingControllers[1].text =
+          context.read<RootDataModel>().userData.password;
+    }
     super.initState();
   }
 
@@ -56,10 +58,8 @@ class LoginState extends State<Login> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Checkbox(
-                        value: context
-                            .watch<RootDataModel>()
-                            .localStorageData
-                            .rememberMe,
+                        value:
+                            context.watch<RootDataModel>().userData.rememberMe,
                         activeColor: Colors.black45,
                         onChanged: (_) {
                           context.read<RootDataModel>().changeRememberMe();
@@ -84,14 +84,21 @@ class LoginState extends State<Login> {
                 width: 400,
                 child: ElevatedButton(
                     onPressed: () async {
-                      ToastOne.oneToast([
-                        'Formal error' * 10,
-                        'contains a space or text is empty' * 10
-                      ]);
-                      return;
-                      await context.read<RootDataModel>().login(
+                      int flag = await context.read<RootDataModel>().login(
                           textEditingControllers[0].text,
                           textEditingControllers[1].text);
+                      //这里的flag是Future得到的，之前owo_user项目这样写会有警告
+                      if (flag == 1) {
+                        ToastOne.oneToast([
+                          'Formal error',
+                          'contains a space or text is empty.'
+                        ]);
+                      } else if (flag == 2) {
+                        ToastOne.oneToast([
+                          'Login fail',
+                          'The user name does not exist or the password is incorrect.'
+                        ]);
+                      }
                     },
                     style: ButtonStyle(
                         backgroundColor: MaterialStateColor.resolveWith(

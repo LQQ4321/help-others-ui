@@ -1,6 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Config {
@@ -12,7 +15,21 @@ class Config {
   static const String requestForm = '/requestForm';
   static const String status = 'status';
   static const String succeedStatus = 'succeed';
-  static const String securityKey = 'help others';
+
+  // 得满足16位
+  static String secretKey = 'help' * 4;
+  static final securityKey = encrypt.Key.fromUtf8(secretKey);
+  static final securityIV = encrypt.IV.fromUtf8(secretKey);
+  static final encrypter = encrypt.Encrypter(encrypt.AES(securityKey));
+
+  static String encryptFunc(String plainText) {
+    return encrypter.encrypt(plainText, iv: securityIV).base64;
+  }
+
+  static String decryptFunc(String secretText) {
+    return encrypter.decrypt(encrypt.Encrypted.fromBase64(secretText),
+        iv: securityIV);
+  }
 
   //根据给定的后缀，选择一个文件
   static Future<FilePickerResult?> selectAFile(List<String> fileType) async {

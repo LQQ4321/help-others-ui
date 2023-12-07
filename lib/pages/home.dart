@@ -21,10 +21,13 @@ class Home extends StatelessWidget {
               const EdgeInsets.only(right: 50, left: 50, top: 20, bottom: 20),
           child: Builder(
             builder: (BuildContext context) {
-              if (true) {
+              int pageId = context.watch<RootDataModel>().userData.pageId;
+              if (pageId == 1) {
+                return const SeekHelpList();
+              } else if (pageId == 2) {
                 return const SeekAHelp();
-                // return const SeekHelpList();
               }
+              return Container();
             },
           ),
         ))

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/data/constantData.dart';
+import 'package:help_them/data/rootData.dart';
+import 'package:help_them/macroWidgets/dialogOne.dart';
+import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
 
 class SeekAHelp extends StatefulWidget {
   const SeekAHelp({Key? key}) : super(key: key);
@@ -18,6 +22,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
   String _codeFileInfo = 'Please select the code file';
   List<int>? _imageContent;
   List<int>? _codeContent;
+  String _imageType = '';
+  String _codeType = '';
 
   @override
   void initState() {
@@ -83,10 +89,18 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       '${filePickerResult.files.single.name}  ( ${filePickerResult.files.single.size} bytes )';
                                   setState(() {
                                     if (index == 0) {
+                                      _imageType = filePickerResult
+                                          .files.single.name
+                                          .split('.')
+                                          .last;
                                       _imageFileInfo = fileInfo;
                                       _imageContent = filePickerResult
                                           .files.single.bytes as List<int>;
                                     } else {
+                                      _codeType = filePickerResult
+                                          .files.single.name
+                                          .split('.')
+                                          .last;
                                       _codeFileInfo = fileInfo;
                                       _codeContent = filePickerResult
                                           .files.single.bytes as List<int>;
@@ -157,8 +171,19 @@ class _SeekAHelpState extends State<SeekAHelp> {
                   return const SizedBox(width: 50);
                 }
                 return ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (index == 0) {
+                        bool isConfirm = false;
+                        await DialogOne.confirmInfoDialog(
+                            context,
+                            [
+                              'Warn',
+                              'Your action will not be saved, do you still want to exit ?'
+                            ],
+                            (p0) => isConfirm = p0);
+                        if (isConfirm) {
+                          context.read<RootDataModel>().switchRoute(1);
+                        }
                       } else {}
                     },
                     style: ButtonStyle(

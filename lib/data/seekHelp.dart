@@ -53,7 +53,7 @@ class SeekHelpModel extends ChangeNotifier {
   List<SingleSeekHelp> showSeekHelpList = [];
 
   // 当前正在浏览的日期
-  String currentDate = '';
+  String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   int filterStatus = 0; //All Unsolved Resolved
   int filterScore = 0; //High Low
   int filterLike = 0; //High low
@@ -128,6 +128,7 @@ class SeekHelpModel extends ChangeNotifier {
       return false;
     });
     filterFromRule();
+    notifyListeners();
     debugPrint(showSeekHelpList.toString());
     return flag;
   }
@@ -171,9 +172,8 @@ class SeekHelpModel extends ChangeNotifier {
       'score': moneyReward.toString(),
       'imageType': texts[3],
       'codeType': texts[4],
-      'language':texts[5],
-      'userId': texts[6],
-      'date': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())
+      'userId': texts[5],
+      'uploadTime': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())
     });
     int flag =
         await Config.dio.post(Config.requestForm, data: formData).then((value) {
@@ -182,6 +182,7 @@ class SeekHelpModel extends ChangeNotifier {
       debugPrint(error.toString());
       return 1;
     });
+    notifyListeners();
     return flag;
   }
 }
