@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/functions/functionOne.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
 class SingleSeekHelp {
   late String seekHelpId; //求组id
+  late String seekHelperId; //求助人id
+  late String seekHelperName; //求组人姓名
   late String problemLink; //题目链接
   late String topicRemark; //题目文字描述或备注
   late String uploadTime; //该求助上传的时间
@@ -23,6 +24,8 @@ class SingleSeekHelp {
   factory SingleSeekHelp.fromJson(dynamic data) {
     SingleSeekHelp singleSeekHelp = SingleSeekHelp();
     singleSeekHelp.seekHelpId = data['ID'].toString();
+    singleSeekHelp.seekHelperId = data['SeekHelperId'];
+    singleSeekHelp.seekHelperName = data['SeekHelperName'];
     singleSeekHelp.problemLink = data['ProblemLink'];
     singleSeekHelp.topicRemark = data['TopicRemark'];
     singleSeekHelp.uploadTime = data['UploadTime'];
@@ -57,40 +60,57 @@ class SeekHelpModel extends ChangeNotifier {
   int filterStatus = 0; //All Unsolved Resolved
   int filterScore = 0; //High Low
   int filterLike = 0; //High low
-  int filterTime = 0; //Early Late
+  int filterTime = 0; //Late Early
   int filterLanguage = 0; //All C C++ Golang
-  int filterOrder = 0; //score like time
+  int filterOrder = 0; //time score like
 
-  void filterFromRule({int order = -1}) {
-    showSeekHelpList.clear();
-    for (int i = 0; i < seekHelpMap[currentDate]!.length; i++) {
-      if (filterStatus != 0 &&
-          seekHelpMap[currentDate]![i].status + 1 != filterStatus) {
-        continue;
+  void resetFilter() {
+    filterStatus = 0;
+    filterScore = 0;
+    filterLike = 0;
+    filterTime = 0;
+    filterLanguage = 0;
+    filterOrder = 0;
+  }
+  //0 1
+  void filterFromRule({int order = -1,int filterRule = 0}) {
+    if(order == 0){
+      filterStatus = filterRule;
+    }else if(order == 4){
+      filterLanguage = filterRule;
+    }
+    // debugPrint(showSeekHelpList.length.toString());
+    // debugPrint(order.toString());
+    // debugPrint(filterRule.toString());
+    showSeekHelpList.removeWhere((element) {
+      if (filterStatus != 0 && element.status + 1 != filterStatus) {
+        return true;
       }
       if (filterLanguage != 0 &&
-          seekHelpMap[currentDate]![i].language !=
-              FunctionOne.switchLanguage(filterLanguage)) {
-        continue;
+          element.language != FunctionOne.switchLanguage(filterLanguage)) {
+        return true;
       }
-      showSeekHelpList.add(seekHelpMap[currentDate]![i]);
-    }
-    if (order != -1) {
-      filterOrder = order;
+      return false;
+    });
+    if (order > 0 && order < 4) {
+      filterOrder = order - 1;
       if (filterOrder == 0) {
-        showSeekHelpList.sort((a, b) {
-          return (a.score - b.score) * (filterScore == 0 ? -1 : 1);
-        });
-      } else if (filterOrder == 1) {
-        showSeekHelpList.sort((a, b) {
-          return (a.like - b.like) * (filterLike == 0 ? -1 : 1);
-        });
-      } else if (filterOrder == 2) {
+        filterTime = filterRule;
         showSeekHelpList.sort((a, b) {
           return (DateTime.parse(a.uploadTime)
                   .difference(DateTime.parse(b.uploadTime))
                   .inSeconds) *
               (filterTime == 0 ? -1 : 1);
+        });
+      } else if (filterOrder == 1) {
+        filterScore = filterRule;
+        showSeekHelpList.sort((a, b) {
+          return (a.score - b.score) * (filterScore == 0 ? -1 : 1);
+        });
+      } else if (filterOrder == 2) {
+        filterLike = filterRule;
+        showSeekHelpList.sort((a, b) {
+          return (a.like - b.like) * (filterLike == 0 ? -1 : 1);
         });
       }
     }
@@ -103,7 +123,7 @@ class SeekHelpModel extends ChangeNotifier {
     }
     //判断内存中是否包含准备要请求的日期数据
     if (seekHelpMap.containsKey(currentDate)) {
-      showSeekHelpList = seekHelpMap[currentDate]!;
+      showSeekHelpList = [...seekHelpMap[currentDate]!];
       filterFromRule();
       return true;
     }
@@ -121,23 +141,28 @@ class SeekHelpModel extends ChangeNotifier {
       seekHelpMap[currentDate] = List.generate(tempList.length, (index) {
         return SingleSeekHelp.fromJson(tempList[index]);
       });
-      showSeekHelpList = seekHelpMap[currentDate]!;
+      // debugPrint(showSeekHelpList.length.toString());
+      // showSeekHelpList.clear();
+      showSeekHelpList = [...seekHelpMap[currentDate]!];
+      filterFromRule();
+      // debugPrint(showSeekHelpList.length.toString());
+      // debugPrint(seekHelpMap.toString());
+      // debugPrint(showSeekHelpList.toString());
       return true;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
       return false;
     });
-    filterFromRule();
+    debugPrint('Hello' + showSeekHelpList.length.toString());
     notifyListeners();
-    debugPrint(showSeekHelpList.toString());
     return flag;
   }
 
   // 0 成功 1 失败(网络或者服务器的问题) 2 image is null 3 code is null 4 remark is empty
   // 5 money reward >= 100 | 6  < 0 | 7  > own score | 8 is not number
-  //texts = [problem link,money reward,remark,image type,code type,name]
-  Future<int> seekAHelp(List<String> texts, List<int>? codeContent,
-      List<int>? imageContent) async {
+  //texts = [problem link,money reward,remark,image type,code type,userId]
+  Future<int> seekAHelp(List<String> texts, int userScore,
+      List<int>? codeContent, List<int>? imageContent) async {
     if (imageContent == null) {
       return 2;
     } else if (codeContent == null) {
@@ -155,18 +180,13 @@ class SeekHelpModel extends ChangeNotifier {
     //FIXME 这里的10应该修改为用户的总score
     if (moneyReward >= 100) {
       return 5;
-    } else if (moneyReward < 0) {
+    } else if (moneyReward <= 0) {
       return 6;
     } else if (moneyReward > 10) {
       return 7;
     }
     FormData formData = FormData.fromMap({
       'requestType': 'seekAHelp',
-      //这里好像有坑，好像下面的key，在后端看到好像是files[]
-      'files': [
-        MultipartFile.fromBytes(codeContent),
-        MultipartFile.fromBytes(imageContent)
-      ],
       'problemLink': texts[0],
       'remark': texts[2],
       'score': moneyReward.toString(),
@@ -175,14 +195,36 @@ class SeekHelpModel extends ChangeNotifier {
       'userId': texts[5],
       'uploadTime': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())
     });
+    //TODO 好像还真得有文件名
+    formData.files.add(MapEntry('file1',
+        MultipartFile.fromBytes(codeContent, filename: 'origin.${texts[4]}')));
+    formData.files.add(MapEntry('file2',
+        MultipartFile.fromBytes(imageContent, filename: 'image.${texts[3]}')));
     int flag =
         await Config.dio.post(Config.requestForm, data: formData).then((value) {
-      return value.data[Config.status] == Config.succeedStatus ? 0 : 1;
+      if (value.data[Config.status] != Config.succeedStatus) {
+        return 1;
+      }
+      addToLocal(value.data['singleSeekHelp']);
+      return 0;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
       return 1;
     });
     notifyListeners();
     return flag;
+  }
+
+  void addToLocal(dynamic data) {
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    if (!seekHelpMap.containsKey(today)) {
+      return;
+    }
+    seekHelpMap[today]!.add(SingleSeekHelp.fromJson(data));
+    if (currentDate == today) {
+      showSeekHelpList = [...seekHelpMap[currentDate]!];
+      resetFilter();
+      filterFromRule();
+    }
   }
 }

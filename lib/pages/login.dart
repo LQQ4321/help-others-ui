@@ -98,6 +98,15 @@ class LoginState extends State<Login> {
                           'Login fail',
                           'The user name does not exist or the password is incorrect.'
                         ]);
+                      } else if (flag == 0) {
+                        bool flag =
+                            await context.read<RootDataModel>().seekHelp(1);
+                        if (!flag) {
+                          ToastOne.oneToast([
+                            'Request data fail',
+                            'The network is disconnected or the back-end is faulty.'
+                          ], duration: 10);
+                        }
                       }
                     },
                     style: ButtonStyle(

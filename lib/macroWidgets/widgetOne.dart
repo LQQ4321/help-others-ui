@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class DialogButtons extends StatefulWidget {
-  //list包含的数据[前两个按钮的文字，操作失败后的提示信息]
   DialogButtons(
       {Key? key,
       required this.list,
-      required this.funcList,
+      required this.callBack,
       this.confirmButtonColor = Colors.redAccent})
       : super(key: key);
   final List<String> list;
   final Color confirmButtonColor;
-  List<Function> funcList;
+  final Function(bool) callBack;
 
   @override
   State<DialogButtons> createState() => _DialogButtonsState();
@@ -43,12 +42,7 @@ class _DialogButtonsState extends State<DialogButtons> {
           const SizedBox(width: 20),
           ElevatedButton(
               onPressed: () {
-                // if (!widget.funcList[0]()) {
-                //   MyDialogs.oneToast([widget.list[2], widget.list[3]],
-                //       infoStatus: 2, duration: 5);
-                //   return;
-                // }
-                widget.funcList[1](true);
+                widget.callBack(true);
                 Navigator.pop(context);
               },
               style: ButtonStyle(
@@ -73,11 +67,13 @@ class MyPopupMenu extends StatefulWidget {
       {Key? key,
       required this.list,
       required this.callBack,
+      this.revealText = true,
       this.iconData = Icons.keyboard_arrow_down_sharp})
       : super(key: key);
-  final List<String> list;
-  final Function(int) callBack;
-  final IconData iconData;
+  final List<String> list; //选项
+  final Function(int) callBack; //回调函数
+  final IconData iconData; //图标
+  final bool revealText; //是否显示文字
 
   @override
   State<MyPopupMenu> createState() => _MyPopupMenuState();
@@ -104,22 +100,24 @@ class _MyPopupMenuState extends State<MyPopupMenu> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: Colors.black12)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.list[_item],
-                style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
-              ),
-              Icon(
-                widget.iconData,
-                color: Colors.black,
-              )
-            ],
-          ),
+          child: widget.revealText
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.list[_item],
+                      style: const TextStyle(
+                          color: Colors.black54,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Icon(
+                      widget.iconData,
+                      color: Colors.black,
+                    )
+                  ],
+                )
+              : Icon(widget.iconData, color: Colors.black),
         ),
         itemBuilder: (BuildContext context) {
           return List.generate(widget.list.length, (index) {

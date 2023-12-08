@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/data/seekHelp.dart';
+import 'package:help_them/macroWidgets/dialogOne.dart';
+import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/seekAHelp.dart';
 import 'package:help_them/pages/bodys/seekHelpList.dart';
 import 'package:provider/provider.dart';
@@ -66,13 +68,37 @@ class _TopBar extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                String selectDate =
+                    context.read<RootDataModel>().seekHelpModel.currentDate;
+                bool isConfirm = false;
+                await DialogOne.timeSelectDialog(context, selectDate, [
+                  (a) {
+                    selectDate = a;
+                  },
+                  (a) {
+                    isConfirm = a;
+                  }
+                ]);
+                if (!isConfirm) {
+                  return;
+                }
+                bool flag = await context
+                    .read<RootDataModel>()
+                    .seekHelp(4, texts: [selectDate]);
+                if (!flag) {
+                  ToastOne.oneToast([
+                    'Request data fail',
+                    'This could be due to network problems or server errors.'
+                  ]);
+                }
+              },
               style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(const Size(120, 40)),
                   backgroundColor: MaterialStateColor.resolveWith(
                       (states) => Colors.grey[200]!)),
               child: Text(
-                '2023-07-10',
+                context.watch<RootDataModel>().seekHelpModel.currentDate,
                 style: const TextStyle(color: Colors.black45),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
+import 'package:help_them/macroWidgets/widgetTwo.dart';
 
 class DialogOne {
   //代码复用
@@ -11,6 +12,30 @@ class DialogOne {
         builder: (BuildContext context) {
           return AlertDialog(content: widget);
         });
+  }
+
+  static Future<dynamic> timeSelectDialog(
+      BuildContext context, String oldDate, List<Function> funcList) {
+    return showMyDialog(context, Builder(builder: (context) {
+      return SizedBox(
+        width: 350,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DateTimePicker(
+                oldDate: oldDate, callBack: funcList[0] as Function(String)),
+            Container(
+                height: 2,
+                color: Colors.grey,
+                margin: const EdgeInsets.only(bottom: 10, top: 10)),
+            DialogButtons(
+              list: const ['CANCEL', 'CONFIRM'],
+              callBack: funcList[1] as Function(bool),
+            )
+          ],
+        ),
+      );
+    }), isBarrierDismissible: true);
   }
 
   static Future<dynamic> confirmInfoDialog(
@@ -46,39 +71,11 @@ class DialogOne {
             const SizedBox(height: 10),
             DialogButtons(
               list: const ['CANCEL', 'CONFIRM'],
-              funcList: [
-                <bool>() {
-                  return true;
-                },
-                callBack
-              ],
+              callBack: callBack,
             )
           ],
         ),
       );
     }), isBarrierDismissible: true);
-  }
-
-  //进度显示器，但是进度只是给用户看的，消除用户的等待疲劳
-  static Future<dynamic> processingBar(BuildContext context, String text) {
-    return showMyDialog(context, Builder(builder: (context) {
-      return SizedBox(
-        width: 300,
-        height: 100,
-        child: Column(
-          children: [
-            Text(text,
-                style: const TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w300,
-                    fontSize: 20)),
-            const SizedBox(height: 30),
-            LinearProgressIndicator(
-                backgroundColor: Colors.grey[200],
-                valueColor: const AlwaysStoppedAnimation(Colors.grey))
-          ],
-        ),
-      );
-    }));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/constantData.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/functions/functionOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:provider/provider.dart';
 
@@ -91,7 +93,22 @@ class _BodyState extends State<_Body> {
       child: Column(
         children: [
           _BodyTopTitle(),
-          Expanded(child: _BodyInternalList()),
+          Expanded(
+              child: context
+                      .watch<RootDataModel>()
+                      .seekHelpModel
+                      .showSeekHelpList
+                      .isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Nonexistent data',
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800),
+                      ),
+                    )
+                  : const _BodyInternalList()),
         ],
       ),
     );
@@ -99,16 +116,13 @@ class _BodyState extends State<_Body> {
 }
 
 class _BodyTopTitle extends StatelessWidget {
-  _BodyTopTitle({Key? key}) : super(key: key);
-
-  List<String> titleList = ['Status', 'Score', 'Like', 'Help time', 'Language'];
-  List<int> proportion = [1, 1, 1, 1, 1];
+  const _BodyTopTitle({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (false) {
-      //  如果是管理员
-      titleList.addAll(['']);
+    List<int> proportion = ConstantData.seekHelpProportion;
+    if (context.watch<RootDataModel>().userData.isManager) {
+      proportion = ConstantData.seekHelpManagerProportion;
     }
     return Container(
       height: 50,
@@ -120,33 +134,55 @@ class _BodyTopTitle extends StatelessWidget {
             width: 150,
             height: double.infinity,
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-                border: Border(right: BorderSide(color: Colors.black12))),
             child: const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Help seeker',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
               ),
             ),
           ),
+          Container(width: 1, color: Colors.black12),
           Expanded(
               child: Container(
             padding:
                 const EdgeInsets.only(right: 25, left: 10, top: 10, bottom: 10),
             child: Row(
-              children: List.generate(titleList.length, (index) {
+              children: List.generate(proportion.length, (index) {
                 return Expanded(
                     flex: proportion[index],
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: SizedBox(
-                        width: 130,
-                        child: MyPopupMenu(
-                            list: const ['High score', 'Low score'],
-                            iconData: Icons.sort,
-                            callBack: (a) {}),
-                      ),
+                    child: Builder(
+                      builder: (context) {
+                        if (index > 4) {
+                          return Center(
+                            child: Text(
+                                index == 5
+                                    ? 'Read'
+                                    : (index == 6 ? 'Write' : ''),
+                                style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600)),
+                          );
+                        }
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: 130,
+                            child: MyPopupMenu(
+                                list: ConstantData.seekHelpOptionList[index],
+                                iconData: Icons.sort,
+                                callBack: (a) {
+                                  context
+                                      .read<RootDataModel>()
+                                      .seekHelp(3, list1: [index, a]);
+                                }),
+                          ),
+                        );
+                      },
                     ));
               }),
             ),
@@ -165,46 +201,91 @@ class _BodyInternalList extends StatefulWidget {
 }
 
 class _BodyInternalListState extends State<_BodyInternalList> {
-  List<String> titleList = ['Status', 'Score', 'Like', 'Help time', 'Language'];
-  List<int> proportion = [1, 1, 1, 1, 1];
-
   @override
   Widget build(BuildContext context) {
+    List<int> proportion = ConstantData.seekHelpProportion;
+    if (context.watch<RootDataModel>().userData.isManager) {
+      proportion = ConstantData.seekHelpManagerProportion;
+    }
     return ListView.separated(
-        itemBuilder: (BuildContext context, int index) {
+        itemBuilder: (BuildContext context, int rowIndex) {
           return Container(
             height: 60,
             child: Row(
               children: [
-                Container(
-                  width: 150,
-                  height: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                      border: Border(right: BorderSide(color: Colors.black12))),
-                  child: const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Help seeker',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.grey[300]!),
+                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero)),
+                  ),
+                  onPressed: () {},
+                  child: Container(
+                    width: 150,
+                    height: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        context
+                            .watch<RootDataModel>()
+                            .seekHelpModel
+                            .showSeekHelpList[rowIndex]
+                            .seekHelperName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 13),
+                      ),
                     ),
                   ),
                 ),
+                Container(width: 1, color: Colors.black12),
                 Expanded(
                     child: Container(
                   padding: const EdgeInsets.only(
                       right: 25, left: 10, top: 10, bottom: 10),
                   child: Row(
-                    children: List.generate(titleList.length, (index) {
+                    children: List.generate(proportion.length, (index) {
                       return Expanded(
-                        flex: proportion[index],
-                        child: Text(
-                          titleList[index],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w900, fontSize: 13),
-                        ),
-                      );
+                          flex: proportion[index],
+                          child: Builder(builder: (BuildContext context) {
+                            if (index <= 4) {
+                              return Text(
+                                FunctionOne.parseSeekHelpListData(
+                                    index,
+                                    context
+                                        .watch<RootDataModel>()
+                                        .seekHelpModel
+                                        .showSeekHelpList[rowIndex]),
+                                maxLines: 1,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w900, fontSize: 13),
+                              );
+                            }
+                            if (index == proportion.length - 1) {
+                              return Center(
+                                  child: SizedBox(
+                                width: 40,
+                                height: 30,
+                                child: MyPopupMenu(
+                                  list: const ['Delete'],
+                                  callBack: (a) {
+
+                                  },
+                                  iconData: Icons.more_horiz,
+                                  revealText: false,
+                                ),
+                              ));
+                            }
+                            return Switch(value: false, onChanged: (value) {});
+                          }));
                     }),
                   ),
                 ))
@@ -215,6 +296,10 @@ class _BodyInternalListState extends State<_BodyInternalList> {
         separatorBuilder: (BuildContext context, int index) {
           return Container(height: 1, color: Colors.black12);
         },
-        itemCount: 10);
+        itemCount: context
+            .watch<RootDataModel>()
+            .seekHelpModel
+            .showSeekHelpList
+            .length);
   }
 }

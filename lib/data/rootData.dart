@@ -15,10 +15,36 @@ import 'package:help_them/data/seekHelp.dart';
 
 //感觉前一种方法会方便一些
 
+//FIXME 感觉调试的时候浏览器时不时崩一下，应该是网页内存溢出了
 class RootDataModel extends ChangeNotifier {
   bool isLogin = false;
   UserData userData = UserData();
   SeekHelpModel seekHelpModel = SeekHelpModel();
+
+  //  SeekHelp
+  Future<dynamic> seekHelp(int option,
+      {List<String>? texts, List<int>? list1, List<int>? list2}) async {
+    dynamic flag;
+    if (option == 1) {
+      flag = await seekHelpModel.requestSeekHelpList();
+    } else if (option == 2) {
+      texts!.add(userData.userId);
+      flag = await seekHelpModel.seekAHelp(texts, userData.score, list1, list2);
+    } else if (option == 3) {
+      seekHelpModel.showSeekHelpList = [
+        ...seekHelpModel.seekHelpMap[seekHelpModel.currentDate]!
+      ];
+      seekHelpModel.filterFromRule(order: list1![0], filterRule: list1[1]);
+      debugPrint(seekHelpModel.showSeekHelpList.length.toString());
+    } else if (option == 4) {
+      if (texts![0] != seekHelpModel.currentDate) {
+        flag = seekHelpModel.requestSeekHelpList(newDate: texts[0]);
+      }
+      debugPrint(seekHelpModel.showSeekHelpList.length.toString());
+    }
+    notifyListeners();
+    return flag;
+  }
 
   //注意该方法只执行一遍，
   Future initWebsite() async {
@@ -83,15 +109,14 @@ class RootDataModel extends ChangeNotifier {
       return 2;
     });
     if (flag == 0) {
+      // TODO 测试 管理员和用户的区别
+      // userData.isManager = false;
       isLogin = true;
       userData.pageId = 1;
       notifyListeners();
     }
     return flag;
   }
-
-//  SeekHelp
-  Future<dynamic> seekHelp(int option) async {}
 }
 
 class UserData {

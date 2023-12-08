@@ -96,6 +96,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       _imageFileInfo = fileInfo;
                                       _imageContent = filePickerResult
                                           .files.single.bytes as List<int>;
+                                    debugPrint(_imageType);
+                                    debugPrint(_imageFileInfo);
                                     } else {
                                       _codeType = filePickerResult
                                           .files.single.name
@@ -104,6 +106,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       _codeFileInfo = fileInfo;
                                       _codeContent = filePickerResult
                                           .files.single.bytes as List<int>;
+                                      debugPrint(_codeType);
+                                      debugPrint(_codeFileInfo);
                                     }
                                   });
                                 },
@@ -184,7 +188,26 @@ class _SeekAHelpState extends State<SeekAHelp> {
                         if (isConfirm) {
                           context.read<RootDataModel>().switchRoute(1);
                         }
-                      } else {}
+                      } else {
+                        int flag =
+                            await context.read<RootDataModel>().seekHelp(2,
+                                texts: [
+                                  textEditingControllers[0].text,
+                                  textEditingControllers[1].text,
+                                  textEditingControllers[2].text,
+                                  _imageType,
+                                  _codeType
+                                ],
+                                list1: _codeContent,
+                                list2: _imageContent);
+                        if (flag == 0) {
+                          context.read<RootDataModel>().switchRoute(1);
+                        }
+                        ToastOne.oneToast(
+                            ConstantData.seekAHelpPromptMessage[flag],
+                            infoStatus: flag == 0 ? 0 : 2,
+                            duration: 8);
+                      }
                     },
                     style: ButtonStyle(
                         minimumSize:
