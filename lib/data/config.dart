@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:file_picker/file_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Config {
   static final dio =
@@ -13,6 +10,7 @@ class Config {
   }));
   static const String requestJson = '/requestJson';
   static const String requestForm = '/requestForm';
+  static const String requestGet = '/requestGet';
   static const String status = 'status';
   static const String succeedStatus = 'succeed';
 

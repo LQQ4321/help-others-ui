@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
+import 'package:help_them/data/lendHand.dart';
 import 'dart:html' as html;
 import 'package:intl/intl.dart';
 import 'package:help_them/data/seekHelp.dart';
@@ -20,6 +21,7 @@ class RootDataModel extends ChangeNotifier {
   bool isLogin = false;
   UserData userData = UserData();
   SeekHelpModel seekHelpModel = SeekHelpModel();
+  LendHandModel lendHandModel = LendHandModel();
 
   //  SeekHelp
   Future<dynamic> seekHelp(int option,
@@ -35,12 +37,39 @@ class RootDataModel extends ChangeNotifier {
         ...seekHelpModel.seekHelpMap[seekHelpModel.currentDate]!
       ];
       seekHelpModel.filterFromRule(order: list1![0], filterRule: list1[1]);
-      debugPrint(seekHelpModel.showSeekHelpList.length.toString());
     } else if (option == 4) {
+      flag = true;
       if (texts![0] != seekHelpModel.currentDate) {
-        flag = seekHelpModel.requestSeekHelpList(newDate: texts[0]);
+        flag = await seekHelpModel.requestSeekHelpList(newDate: texts[0]);
       }
-      debugPrint(seekHelpModel.showSeekHelpList.length.toString());
+      if (flag) {
+        switchRoute(1);
+      }
+    }
+    notifyListeners();
+    return flag;
+  }
+
+  //LendHadn
+  Future<dynamic> lendHand(int option, {List<int>? list}) async {
+    dynamic flag;
+    if (option == 1) {
+      seekHelpModel.curSeekHelpIndex = list![0];
+      flag = await lendHandModel.requestLendHandList(
+          seekHelpModel.showSeekHelpList[list[0]].seekHelpId);
+      if (flag) {
+        switchRoute(3);
+      }
+    } else if (option == 2) {
+      String dbId = '';
+      if (list![0] == -1) {
+        dbId = seekHelpModel
+            .showSeekHelpList[seekHelpModel.curSeekHelpIndex].seekHelpId;
+      } else {
+        dbId = lendHandModel.showLendHandList[list[0]].lendHandId;
+      }
+      flag = await lendHandModel.showInfo
+          .requestShowData(list[0], dbId);
     }
     notifyListeners();
     return flag;
@@ -69,7 +98,7 @@ class RootDataModel extends ChangeNotifier {
     // notifyListeners();
   }
 
-  // 路由列表 1 求助列表 2 编写求助 3 编写帮助 4 求助和帮助展示 5 网站的介绍 6 用户设置
+  // 路由列表 : 1 求助列表 2 编写求助 3 编写帮助 4 求助和帮助展示 5 网站的介绍 6 用户设置
   String? switchRoute(int pageId) {
     userData.switchRoute(pageId);
     notifyListeners();

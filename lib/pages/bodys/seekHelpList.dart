@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:help_them/data/constantData.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/functions/functionOne.dart';
+import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:provider/provider.dart';
 
@@ -10,12 +11,8 @@ class SeekHelpList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _TopBar(),
-        const SizedBox(height: 20),
-        Expanded(child: _Body())
-      ],
+    return const Column(
+      children: [_TopBar(), SizedBox(height: 20), Expanded(child: _Body())],
     );
   }
 }
@@ -46,14 +43,6 @@ class _TopBarState extends State<_TopBar> {
                 color: Colors.black,
                 fontWeight: FontWeight.w900,
                 fontSize: 20)),
-        // SizedBox(
-        //   width: 200,
-        //   height: 40,
-        //   child: FilletCornerInput(
-        //       textEditingController: _textEditingController,
-        //       callBack: (a) {},
-        //       hintText: 'Search help seeker'),
-        // ),
         ClipOval(
           child: Center(
             child: SizedBox(
@@ -209,7 +198,7 @@ class _BodyInternalListState extends State<_BodyInternalList> {
     }
     return ListView.separated(
         itemBuilder: (BuildContext context, int rowIndex) {
-          return Container(
+          return SizedBox(
             height: 60,
             child: Row(
               children: [
@@ -223,25 +212,38 @@ class _BodyInternalListState extends State<_BodyInternalList> {
                         const RoundedRectangleBorder(
                             borderRadius: BorderRadius.zero)),
                   ),
-                  onPressed: () {},
-                  child: Container(
-                    width: 150,
-                    height: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        context
-                            .watch<RootDataModel>()
-                            .seekHelpModel
-                            .showSeekHelpList[rowIndex]
-                            .seekHelperName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 13),
+                  onPressed: () async {
+                    bool flag = await context
+                        .read<RootDataModel>()
+                        .lendHand(1, list: [rowIndex]);
+                    if (!flag) {
+                      ToastOne.oneToast([
+                        'Request data fail',
+                        'This could be due to network problems or server errors.'
+                      ]);
+                    }
+                  },
+                  child: Tooltip(
+                    message: 'Help',
+                    child: Container(
+                      width: 150,
+                      height: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          context
+                              .watch<RootDataModel>()
+                              .seekHelpModel
+                              .showSeekHelpList[rowIndex]
+                              .seekHelperName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 13),
+                        ),
                       ),
                     ),
                   ),
@@ -276,9 +278,7 @@ class _BodyInternalListState extends State<_BodyInternalList> {
                                 height: 30,
                                 child: MyPopupMenu(
                                   list: const ['Delete'],
-                                  callBack: (a) {
-
-                                  },
+                                  callBack: (a) {},
                                   iconData: Icons.more_horiz,
                                   revealText: false,
                                 ),

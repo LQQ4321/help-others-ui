@@ -8,8 +8,8 @@ class SingleSeekHelp {
   late String seekHelpId; //求组id
   late String seekHelperId; //求助人id
   late String seekHelperName; //求组人姓名
-  late String problemLink; //题目链接
-  late String topicRemark; //题目文字描述或备注
+  // late String problemLink; //题目链接
+  // late String topicRemark; //题目文字描述或备注
   late String uploadTime; //该求助上传的时间
   late String language; //语言类型
   late int maxHelp; //最多可以发布多少个帮助
@@ -26,8 +26,8 @@ class SingleSeekHelp {
     singleSeekHelp.seekHelpId = data['ID'].toString();
     singleSeekHelp.seekHelperId = data['SeekHelperId'];
     singleSeekHelp.seekHelperName = data['SeekHelperName'];
-    singleSeekHelp.problemLink = data['ProblemLink'];
-    singleSeekHelp.topicRemark = data['TopicRemark'];
+    // singleSeekHelp.problemLink = data['ProblemLink'];
+    // singleSeekHelp.topicRemark = data['TopicRemark'];
     singleSeekHelp.uploadTime = data['UploadTime'];
     singleSeekHelp.language = data['Language'];
     singleSeekHelp.maxHelp = data['MaxHelp'];
@@ -41,7 +41,7 @@ class SingleSeekHelp {
 
   @override
   String toString() {
-    return '$seekHelpId $problemLink $topicRemark $uploadTime $language $maxHelp $maxCommit $score $like $ban $status';
+    return '$seekHelpId $uploadTime $language $maxHelp $maxCommit $score $like $ban $status';
   }
 }
 
@@ -55,6 +55,7 @@ class SeekHelpModel extends ChangeNotifier {
   // 展示的列表
   List<SingleSeekHelp> showSeekHelpList = [];
 
+  int curSeekHelpIndex = -1;
   // 当前正在浏览的日期
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   int filterStatus = 0; //All Unsolved Resolved
@@ -79,9 +80,6 @@ class SeekHelpModel extends ChangeNotifier {
     }else if(order == 4){
       filterLanguage = filterRule;
     }
-    // debugPrint(showSeekHelpList.length.toString());
-    // debugPrint(order.toString());
-    // debugPrint(filterRule.toString());
     showSeekHelpList.removeWhere((element) {
       if (filterStatus != 0 && element.status + 1 != filterStatus) {
         return true;
@@ -153,7 +151,6 @@ class SeekHelpModel extends ChangeNotifier {
       debugPrint(error.toString());
       return false;
     });
-    debugPrint('Hello' + showSeekHelpList.length.toString());
     notifyListeners();
     return flag;
   }
