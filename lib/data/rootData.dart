@@ -51,7 +51,8 @@ class RootDataModel extends ChangeNotifier {
   }
 
   //LendHadn
-  Future<dynamic> lendHand(int option, {List<int>? list}) async {
+  Future<dynamic> lendHand(int option,
+      {List<int>? list, List<String>? list2}) async {
     dynamic flag;
     if (option == 1) {
       seekHelpModel.curSeekHelpIndex = list![0];
@@ -68,8 +69,15 @@ class RootDataModel extends ChangeNotifier {
       } else {
         dbId = lendHandModel.showLendHandList[list[0]].lendHandId;
       }
-      flag = await lendHandModel.showInfo
-          .requestShowData(list[0], dbId);
+      debugPrint('1');
+      flag = await lendHandModel.showInfo.requestShowData(list[0], dbId);
+      debugPrint('4');
+    } else if (option == 3) {
+      list2!.add(seekHelpModel
+          .showSeekHelpList[seekHelpModel.curSeekHelpIndex].uploadTime
+          .split(' ')[0]);
+      list2.add(userData.userId);
+      flag = await lendHandModel.lendAHand(list2, list);
     }
     notifyListeners();
     return flag;

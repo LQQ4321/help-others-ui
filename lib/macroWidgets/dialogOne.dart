@@ -5,13 +5,57 @@ import 'package:help_them/macroWidgets/widgetTwo.dart';
 class DialogOne {
   //代码复用
   static Future<dynamic> showMyDialog(BuildContext context, Widget widget,
-      {bool isBarrierDismissible = false}) async {
+      {bool isBarrierDismissible = true}) async {
     return showDialog<dynamic>(
         context: context,
         barrierDismissible: isBarrierDismissible,
         builder: (BuildContext context) {
           return AlertDialog(content: widget);
         });
+  }
+
+  //展示一张图片
+  static Future<dynamic> showTextField(BuildContext context, String text) {
+    return showMyDialog(context, Builder(builder: (context) {
+      return SizedBox(
+          width: MediaQuery.of(context).size.width * 0.6,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(8)),
+              child: ListView(
+                children: [
+                  Text(
+                    text,
+                    style: const TextStyle(color: Colors.black),
+                  )
+                ],
+              )));
+    }));
+  }
+
+  //展示一张图片
+  static Future<dynamic> showAPicture(
+      BuildContext context, ImageProvider imageProvider) {
+    return showMyDialog(context, Builder(builder: (context) {
+      return SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8,
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: ListView(
+            padding: const EdgeInsets.only(right: 10),
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Image(
+                  fit: BoxFit.fitWidth,
+                  image: imageProvider,
+                ),
+              )
+            ],
+          ));
+    }));
   }
 
   static Future<dynamic> timeSelectDialog(

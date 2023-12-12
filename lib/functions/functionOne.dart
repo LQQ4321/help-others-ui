@@ -8,6 +8,75 @@ class FunctionOne {
   //
   // }
 
+  /// 计算文字宽度
+  static double calculateText(String text, TextStyle style) {
+    final TextPainter textPainter = TextPainter(
+        textAlign: TextAlign.left,
+        textDirection: TextDirection.ltr,
+        text: TextSpan(text: text, style: style));
+    textPainter.layout();
+    return textPainter.width;
+  }
+
+  //划分每一行
+  static List<String> splitTextIntoLines(
+      BuildContext context, String text, double maxWidth) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: DefaultTextStyle.of(context).style,
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.left,
+    );
+
+    textPainter.layout(maxWidth: maxWidth);
+
+    final List<String> lines = [];
+    final int textLength = text.length;
+
+    int startIndex = 0;
+    int endIndex = textLength;
+
+    while (startIndex < endIndex) {
+      final endPosition = textPainter.getPositionForOffset(
+        Offset(maxWidth, textPainter.height),
+      );
+
+      String line = text.substring(startIndex, endIndex);
+
+      if (endPosition.offset < textLength) {
+        final lastSpaceIndex = line.lastIndexOf(' ');
+
+        if (lastSpaceIndex != -1) {
+          endIndex = startIndex + lastSpaceIndex;
+          line = text.substring(startIndex, endIndex);
+        }
+      }
+      lines.add(line);
+      startIndex = endIndex;
+      endIndex = textLength;
+    }
+    return lines;
+  }
+
+  static String switchFileTypeAndLang(bool isFileType, String arg) {
+    if (isFileType) {
+      for (int i = 0; i < ConstantData.supportedLanguageFiles.length; i++) {
+        if (ConstantData.supportedLanguageFiles[i] == arg) {
+          return ConstantData.supportedLanguages[i];
+        }
+      }
+    } else {
+      for (int i = 0; i < ConstantData.supportedLanguages.length; i++) {
+        if (ConstantData.supportedLanguages[i] == arg) {
+          return ConstantData.supportedLanguageFiles[i];
+        }
+      }
+    }
+    return 'Not selected';
+  }
+
   static dynamic switchLanguage(dynamic option) {
     if (option is int) {
       return ConstantData.supportedLanguages[option - 1];

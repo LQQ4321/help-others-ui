@@ -3,6 +3,25 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:help_them/data/constantData.dart';
 
 class ToastOne {
+//在特定组件上方显示一段文本
+  static VoidCallback smallTip(BuildContext context, String text) {
+    return BotToast.showAttachedWidget(
+        targetContext: context,
+        duration: const Duration(seconds: 5),
+        attachedBuilder: (cancel) {
+          return Card(
+              child: Container(
+            color: Colors.grey[100],
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              text,
+              style: const TextStyle(
+                  color: Colors.black54, fontWeight: FontWeight.w500),
+            ),
+          ));
+        });
+  }
+
   //  创建一个右上角的Toast，方便显示一条不需要选手作出回复的消息，只需要选手知道即可，一段事件后会自己消失
   static VoidCallback oneToast(List<String> texts,
       {int infoStatus = 2,

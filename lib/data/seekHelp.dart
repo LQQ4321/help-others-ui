@@ -155,17 +155,17 @@ class SeekHelpModel extends ChangeNotifier {
     return flag;
   }
 
-  // 0 成功 1 失败(网络或者服务器的问题) 2 image is null 3 code is null 4 remark is empty
+  // 0 成功 1 失败(网络或者服务器的问题) 2 code is null 3 remark is empty 4 image is null
   // 5 money reward >= 100 | 6  < 0 | 7  > own score | 8 is not number
   //texts = [problem link,money reward,remark,image type,code type,userId]
   Future<int> seekAHelp(List<String> texts, int userScore,
       List<int>? codeContent, List<int>? imageContent) async {
     if (imageContent == null) {
-      return 2;
-    } else if (codeContent == null) {
-      return 3;
-    } else if (texts[2].isEmpty) {
       return 4;
+    } else if (codeContent == null) {
+      return 2;
+    } else if (texts[2].isEmpty) {
+      return 3;
     }
     int moneyReward = 0;
     try {

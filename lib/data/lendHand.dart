@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:transparent_image/transparent_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 
 class SingleLendHand {
   late String lendHandId; //帮助id
@@ -47,7 +52,8 @@ class ShowInfo {
   // late int ban;
 //seekHelper私有
   late String problemLink; //题目链接
-  String? imagePath; //图片的地址
+  ImageProvider imageProvider = MemoryImage(kTransparentImage);
+
 //lendHander私有
 
   //获取要展示的数据
@@ -62,6 +68,7 @@ class ShowInfo {
       'info': [_curRightShowPage < 0 ? 'seekHelp' : 'lendHand', dbId]
     };
     String? codePath;
+    String? imagePath;
     bool flag =
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       if (value.data[Config.status] != Config.succeedStatus) {
@@ -70,52 +77,120 @@ class ShowInfo {
       codePath = value.data['codePath'];
       remark = value.data['remark'];
       if (_curRightShowPage < 0) {
-        problemLink = value.data['ProblemLink'];
-        imagePath = value.data['ImagePath'];
+        problemLink = value.data['problemLink'];
+        imagePath = value.data['imagePath'];
       }
       return true;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
       return false;
     });
+    debugPrint('2');
     //二阶段，根据之前得到的文件地址去获取真正的文件,这里是获取code文件,image直接通过前端获取
+    List<Future<bool>> funcList = [];
     if (flag && codePath != null) {
-      flag = await Config.dio
-          .get(Config.requestGet,
-              options: Options(
-                  headers: {'filePath': codePath},
-                  responseType: ResponseType.plain))
-          .then((value) {
-        debugPrint(value.data);
-        if (value.statusCode != 200) {
-          return false;
-        }
-        codeContent = value.data.toString().split(r'\n');
-        debugPrint("${codeContent.length} lines");
-        return true;
-      });
+      funcList.add(getCodeFile(codePath!));
     }
+    if (flag && imagePath != null) {
+      funcList.add(getImageFile(imagePath!));
+    }
+    await Future.wait(funcList).then((value) {
+      flag = !value.contains(false);
+    });
+    debugPrint('3');
     if (flag) {
       curRightShowPage = _curRightShowPage < -1 ? -1 : _curRightShowPage;
     }
     return flag;
+  }
+
+  Future<bool> getCodeFile(String codePath) async {
+    Map request = {
+      'requestType': 'downloadFile',
+      'info': [codePath]
+    };
+    return await Config.dio
+        .post(Config.requestJson,
+            data: request, options: Options(responseType: ResponseType.plain))
+        .then((value) {
+      if (value.statusCode != 200) {
+        return false;
+      }
+      codeContent = const LineSplitter().convert(value.data.toString());
+      return true;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return false;
+    });
+  }
+
+  Future<bool> getImageFile(String imagePath) async {
+    Map request = {
+      'requestType': 'downloadFile',
+      'info': [imagePath]
+    };
+    return await Config.dio
+        .post(Config.requestJson,
+            data: request, options: Options(responseType: ResponseType.bytes))
+        .then((value) {
+      if (value.statusCode != 200) {
+        return false;
+      }
+      final imageData = value.data as List<int>;
+      imageProvider = MemoryImage(Uint8List.fromList(imageData));
+      return true;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return false;
+    });
   }
 }
 
 class LendHandModel extends ChangeNotifier {
   String curSeekHelpId = '';
 
-  //key 是SeekHelpId
-  Map<String, List<SingleLendHand>> lendHandMap = {};
-
   List<SingleLendHand> showLendHandList = [];
   ShowInfo showInfo = ShowInfo();
 
+  //0 成功 1 失败 2 codeContent is null 3 remark is empty
+  //texts [remark,code type,date,userId]
+  Future<int> lendAHand(List<String> texts, List<int>? codeContent) async {
+    if (texts[0].isEmpty) {
+      return 3;
+    }
+    if (codeContent == null) {
+      return 2;
+    }
+    FormData formData = FormData.fromMap({
+      'requestType': 'lendAHand',
+      'remark': texts[0],
+      'codeType': texts[1],
+      'seekHelpId': curSeekHelpId,
+      'date': texts[2],
+      'userId': texts[3],
+      'uploadTime': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())
+    });
+    formData.files.add(MapEntry('file1',
+        MultipartFile.fromBytes(codeContent, filename: 'copy.${texts[1]}')));
+    debugPrint(formData.fields.toString());
+    int flag =
+        await Config.dio.post(Config.requestForm, data: formData).then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        return 1;
+      }
+      showLendHandList
+          .add(SingleLendHand.fromJson(value.data['singleLendHand']));
+      return 0;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return 1;
+    });
+    return flag;
+  }
+
   //请求LendHand的基本数据，具体的文件信息在本次请求中还没有获取
   Future<bool> requestLendHandList(String seekHelpId) async {
-    if (lendHandMap.containsKey(seekHelpId)) {
-      showLendHandList.clear();
-      showLendHandList = [...lendHandMap[seekHelpId]!];
+    if (curSeekHelpId == seekHelpId) {
       return true;
     }
     Map request = {
@@ -128,15 +203,12 @@ class LendHandModel extends ChangeNotifier {
         return false;
       }
       List<dynamic> tempList = value.data['lendHandList'];
-      lendHandMap[seekHelpId] = List.generate(tempList.length, (index) {
+      showLendHandList = List.generate(tempList.length, (index) {
         return SingleLendHand.fromJson(tempList[index]);
       });
-      lendHandMap[seekHelpId]!.sort((a, b) {
+      showLendHandList.sort((a, b) {
         return b.like - a.like;
       });
-      //FIXME dart需要手动清理吗，应该有gc吧，还是说clear可以标记一下用不到的数据，方便gc回收
-      showLendHandList.clear();
-      showLendHandList = [...lendHandMap[seekHelpId]!];
       return true;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
@@ -147,8 +219,6 @@ class LendHandModel extends ChangeNotifier {
     }
     if (flag) {
       curSeekHelpId = seekHelpId;
-    } else {
-      lendHandMap.remove(seekHelpId);
     }
     return flag;
   }

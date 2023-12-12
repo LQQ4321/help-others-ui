@@ -27,6 +27,15 @@ class LoginState extends State<Login> {
     super.initState();
   }
 
+
+  @override
+  void dispose() {
+    for(int i = 0;i < textEditingControllers.length;i++){
+      textEditingControllers[i].dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(

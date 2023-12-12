@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/data/constantData.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/functions/functionOne.dart';
 import 'package:help_them/macroWidgets/dialogOne.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
@@ -9,7 +10,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 
 class SeekAHelp extends StatefulWidget {
-  const SeekAHelp({Key? key}) : super(key: key);
+  const SeekAHelp({Key? key, required this.isSeekHelp}) : super(key: key);
+  final bool isSeekHelp;
 
   @override
   State<SeekAHelp> createState() => _SeekAHelpState();
@@ -20,31 +22,56 @@ class _SeekAHelpState extends State<SeekAHelp> {
   Color _color = Colors.black12;
   String _imageFileInfo = 'Please select a screenshot of the problem';
   String _codeFileInfo = 'Please select the code file';
+
+  //FIXME 试着连续提交两次看看,会不会出现上一次的缓存，这一次还存在的情况,需要每次提交成功后，手动清空吗？
   List<int>? _imageContent;
   List<int>? _codeContent;
   String _imageType = '';
   String _codeType = '';
+  String language = '';
 
   @override
   void initState() {
-    textEditingControllers =
-        List.generate(3, (index) => TextEditingController());
+    textEditingControllers = List.generate(
+        widget.isSeekHelp ? 3 : 1, (index) => TextEditingController());
     super.initState();
   }
 
   @override
+  void dispose() {
+    for (int i = 0; i < textEditingControllers.length; i++) {
+      textEditingControllers[i].dispose();
+    }
+    //数组需要手动清除吗？
+    _imageContent?.clear();
+    _codeContent?.clear();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!widget.isSeekHelp) {
+      int curSeekHelpIndex =
+          context.watch<RootDataModel>().seekHelpModel.curSeekHelpIndex;
+      language = context
+          .watch<RootDataModel>()
+          .seekHelpModel
+          .showSeekHelpList[curSeekHelpIndex]
+          .language;
+    }
     return Container(
       margin: const EdgeInsets.only(left: 150, right: 150),
       child: Column(
         children: [
-          RectangleInput(
-              textEditingController: textEditingControllers[0],
-              icon: Icons.link,
-              labelText: 'Problem link'),
+          widget.isSeekHelp
+              ? RectangleInput(
+                  textEditingController: textEditingControllers[0],
+                  icon: Icons.link,
+                  labelText: 'Problem link')
+              : Container(),
           Column(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(2, (index) {
+              children: List.generate(widget.isSeekHelp ? 2 : 1, (index) {
                 return Container(
                   margin: const EdgeInsets.only(top: 20),
                   height: 50,
@@ -62,7 +89,7 @@ class _SeekAHelpState extends State<SeekAHelp> {
                               child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    index == 0 ? _imageFileInfo : _codeFileInfo,
+                                    index == 0 ? _codeFileInfo : _imageFileInfo,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -77,18 +104,29 @@ class _SeekAHelpState extends State<SeekAHelp> {
                             height: 50,
                             child: TextButton(
                                 onPressed: () async {
+                                  List<String> fileType = [];
+                                  if (widget.isSeekHelp) {
+                                    if (index == 0) {
+                                      fileType.addAll(
+                                          ConstantData.supportedLanguageFiles);
+                                    } else {
+                                      fileType.addAll(
+                                          ConstantData.supportedPictureFiles);
+                                    }
+                                  } else {
+                                    fileType.add(
+                                        FunctionOne.switchFileTypeAndLang(
+                                            false, language));
+                                  }
                                   FilePickerResult? filePickerResult =
-                                      await Config.selectAFile(index == 0
-                                          ? ConstantData.supportedPictureFiles
-                                          : ConstantData
-                                              .supportedLanguageFiles);
+                                      await Config.selectAFile(fileType);
                                   if (filePickerResult == null) {
                                     return;
                                   }
                                   String fileInfo =
                                       '${filePickerResult.files.single.name}  ( ${filePickerResult.files.single.size} bytes )';
                                   setState(() {
-                                    if (index == 0) {
+                                    if (index == 1) {
                                       _imageType = filePickerResult
                                           .files.single.name
                                           .split('.')
@@ -96,8 +134,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       _imageFileInfo = fileInfo;
                                       _imageContent = filePickerResult
                                           .files.single.bytes as List<int>;
-                                    debugPrint(_imageType);
-                                    debugPrint(_imageFileInfo);
+                                      debugPrint(_imageType);
+                                      debugPrint(_imageFileInfo);
                                     } else {
                                       _codeType = filePickerResult
                                           .files.single.name
@@ -112,7 +150,7 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                   });
                                 },
                                 child: Icon(
-                                  index == 0 ? Icons.image : Icons.file_open,
+                                  index == 0 ? Icons.file_open : Icons.image,
                                   color: Colors.black38,
                                 )),
                           ),
@@ -123,18 +161,20 @@ class _SeekAHelpState extends State<SeekAHelp> {
                 );
               })),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              SizedBox(
-                width: 200,
-                child: RectangleInput(
-                  textEditingController: textEditingControllers[1],
-                  icon: Icons.attach_money,
-                  labelText: 'Money reward',
-                ),
-              )
-            ],
-          ),
+          widget.isSeekHelp
+              ? Row(
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: RectangleInput(
+                        textEditingController: textEditingControllers[1],
+                        icon: Icons.attach_money,
+                        labelText: 'Money reward',
+                      ),
+                    )
+                  ],
+                )
+              : Container(),
           const SizedBox(height: 20),
           Expanded(
               child: Container(
@@ -156,7 +196,7 @@ class _SeekAHelpState extends State<SeekAHelp> {
               },
               child: Expanded(
                 child: TextField(
-                  controller: textEditingControllers[2],
+                  controller: textEditingControllers[widget.isSeekHelp ? 2 : 0],
                   maxLines: 100,
                   maxLength: 1000,
                   decoration: const InputDecoration(
@@ -186,22 +226,35 @@ class _SeekAHelpState extends State<SeekAHelp> {
                             ],
                             (p0) => isConfirm = p0);
                         if (isConfirm) {
-                          context.read<RootDataModel>().switchRoute(1);
+                          context
+                              .read<RootDataModel>()
+                              .switchRoute(widget.isSeekHelp ? 1 : 3);
                         }
                       } else {
-                        int flag =
-                            await context.read<RootDataModel>().seekHelp(2,
-                                texts: [
-                                  textEditingControllers[0].text,
-                                  textEditingControllers[1].text,
-                                  textEditingControllers[2].text,
-                                  _imageType,
-                                  _codeType
-                                ],
-                                list1: _codeContent,
-                                list2: _imageContent);
+                        int flag = 0;
+                        if (!widget.isSeekHelp) {
+                          flag = await context.read<RootDataModel>().lendHand(3,
+                              list: _codeContent,
+                              list2: [
+                                textEditingControllers[0].text,
+                                _codeType
+                              ]);
+                        } else {
+                          flag = await context.read<RootDataModel>().seekHelp(2,
+                              texts: [
+                                textEditingControllers[0].text,
+                                textEditingControllers[1].text,
+                                textEditingControllers[2].text,
+                                _imageType,
+                                _codeType
+                              ],
+                              list1: _codeContent,
+                              list2: _imageContent);
+                        }
                         if (flag == 0) {
-                          context.read<RootDataModel>().switchRoute(1);
+                          context
+                              .read<RootDataModel>()
+                              .switchRoute(widget.isSeekHelp ? 1 : 3);
                         }
                         ToastOne.oneToast(
                             ConstantData.seekAHelpPromptMessage[flag],

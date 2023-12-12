@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:help_them/data/config.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/dialogOne.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
@@ -27,9 +26,11 @@ class Home extends StatelessWidget {
               if (pageId == 1) {
                 return const SeekHelpList();
               } else if (pageId == 2) {
-                return const SeekAHelp();
+                return const SeekAHelp(isSeekHelp: true);
               } else if (pageId == 3) {
                 return const ShowRoute();
+              } else if (pageId == 4) {
+                return const SeekAHelp(isSeekHelp: false);
               }
               return Container();
             },

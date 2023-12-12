@@ -25,14 +25,6 @@ class _TopBar extends StatefulWidget {
 }
 
 class _TopBarState extends State<_TopBar> {
-  late TextEditingController _textEditingController;
-
-  @override
-  void initState() {
-    _textEditingController = TextEditingController();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -81,7 +73,7 @@ class _BodyState extends State<_Body> {
           borderRadius: BorderRadius.circular(4)),
       child: Column(
         children: [
-          _BodyTopTitle(),
+          const _BodyTopTitle(),
           Expanded(
               child: context
                       .watch<RootDataModel>()
@@ -203,51 +195,44 @@ class _BodyInternalListState extends State<_BodyInternalList> {
             child: Row(
               children: [
                 ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateColor.resolveWith(
-                        (states) => Colors.grey[300]!),
-                    padding: MaterialStateProperty.all(EdgeInsets.zero),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero)),
-                  ),
-                  onPressed: () async {
-                    bool flag = await context
-                        .read<RootDataModel>()
-                        .lendHand(1, list: [rowIndex]);
-                    if (!flag) {
-                      ToastOne.oneToast([
-                        'Request data fail',
-                        'This could be due to network problems or server errors.'
-                      ]);
-                    }
-                  },
-                  child: Tooltip(
-                    message: 'Help',
-                    child: Container(
-                      width: 150,
-                      height: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          context
-                              .watch<RootDataModel>()
-                              .seekHelpModel
-                              .showSeekHelpList[rowIndex]
-                              .seekHelperName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 13),
-                        ),
-                      ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.grey[300]!),
+                      padding: MaterialStateProperty.all(EdgeInsets.zero),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.zero)),
                     ),
-                  ),
-                ),
+                    onPressed: () async {
+                      bool flag = await context
+                          .read<RootDataModel>()
+                          .lendHand(1, list: [rowIndex]);
+                      if (!flag) {
+                        ToastOne.oneToast([
+                          'Request data fail',
+                          'This could be due to network problems or server errors.'
+                        ]);
+                      }
+                    },
+                    child: Container(
+                        width: 150,
+                        height: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                context
+                                    .watch<RootDataModel>()
+                                    .seekHelpModel
+                                    .showSeekHelpList[rowIndex]
+                                    .seekHelperName,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13))))),
                 Container(width: 1, color: Colors.black12),
                 Expanded(
                     child: Container(

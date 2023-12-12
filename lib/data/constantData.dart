@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 
 class ConstantData {
+  static const List<IconData> showRouteTopBarIcons = [
+    Icons.copy,
+    Icons.image,
+    Icons.topic,
+    Icons.favorite,
+    Icons.message
+  ];
+
   static const List<List<String>> seekAHelpPromptMessage = [
     ['Release success', 'Your help has been posted.'],
     [
       'Publishing failure',
       'This could be due to network problems or server errors.'
     ],
-    [
-      'Lack of data',
-      'Please upload a screenshot of the problem for assistance.'
-    ],
     ['Lack of data', 'Please upload a code file that you want to debug.'],
     [
       'Lack of data',
       'Please enter some remarks to facilitate the aid provider to debug.'
+    ],
+    [
+      'Lack of data',
+      'Please upload a screenshot of the problem for assistance.'
     ],
     ['Money reward error', 'The money reward should be less than 100.'],
     ['Money reward error', 'The money reward should be greater than zero.'],
