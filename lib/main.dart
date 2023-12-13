@@ -15,7 +15,6 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: rootDataModel),
-      // ChangeNotifierProvider.value(value: rootDataModel.seekHelpModel),
     ],
     child: const MyApp(),
   ));

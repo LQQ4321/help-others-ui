@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:help_them/data/lendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:provider/provider.dart';
+
+import 'codeCompareShow.dart';
 
 class CodeShow extends StatefulWidget {
   const CodeShow({Key? key}) : super(key: key);
@@ -17,148 +20,12 @@ class _CodeShowState extends State<CodeShow> {
     return Column(
       children: [
         const _TopBar(),
-        Container(
-            height: 1,
-            color: Colors.black12,
-            margin: const EdgeInsets.only(bottom: 10)),
-        const Expanded(child: _SeekHelpCodeShow())
+        Container(height: 1, color: Colors.black12),
+        const Expanded(child: CodeRowShow())
       ],
     );
   }
 }
-
-class _SeekHelpCodeShow extends StatelessWidget {
-  const _SeekHelpCodeShow({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final List<String> codeContext =
-        context.watch<RootDataModel>().lendHandModel.showInfo.codeContent;
-    return ListView.builder(
-        itemCount: codeContext.length,
-        itemExtent: 20,
-        itemBuilder: (BuildContext context, int index) {
-          return Row(
-            children: [
-              SizedBox(
-                width: 50,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                  child: Text(codeContext[index],
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(color: Colors.grey)))
-            ],
-          );
-        });
-  }
-}
-
-// class _CodeTextShow extends StatelessWidget {
-//   const _CodeTextShow({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final List<String> codeContext =
-//         context.watch<RootDataModel>().lendHandModel.showInfo.codeContent;
-//     codeContext.addAll(List.generate(100, (index) => 'Hello World' * index));
-//     return ListView.builder(
-//         itemBuilder: (BuildContext context, int index) {
-//           return LayoutBuilder(
-//             builder: (BuildContext context, BoxConstraints constraints) {
-//               final double maxLineWidth = constraints.maxWidth;
-//               final List<String> lines = FunctionOne.splitTextIntoLines(
-//                   context, codeContext[index], maxLineWidth - 50);
-//               // debugPrint(maxLineWidth.toString() + 'hello');
-//               // debugPrint(lines.length.toString() + 'world');
-//               // debugPrint(constraints.toString());
-//               //小心某些行为空的情况
-//               debugPrint('$index - ${lines.length}');
-//               return SizedBox(
-//                   height: 20 + (lines.length > 1 ? lines.length - 1 : 0) * 40,
-//                   child: Row(
-//                     children: [
-//                       SizedBox(
-//                         width: 40,
-//                         child: Align(
-//                           alignment: Alignment.topRight, //这里先暂时不考虑一行放不下的情况
-//                           child: Text('${index + 1}',
-//                               style: const TextStyle(color: Colors.grey)),
-//                         ),
-//                       ),
-//                       const SizedBox(width: 10),
-//                       Expanded(
-//                           child: Column(
-//                         mainAxisSize: MainAxisSize.min,
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: lines.map((e) {
-//                           return Text(e,
-//                               style: const TextStyle(color: Colors.grey));
-//                         }).toList(),
-//                       ))
-//                     ],
-//                   ));
-//
-//               Row(
-//                 children: [
-//                   Align(
-//                     alignment: Alignment.topRight, //这里先暂时不考虑一行放不下的情况
-//                     child: Text('${index + 1}',
-//                         style: const TextStyle(color: Colors.grey)),
-//                   ),
-//                   const SizedBox(width: 10),
-//                   Expanded(
-//                       child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: lines.map((e) {
-//                       return Text(e,
-//                           style: const TextStyle(color: Colors.grey));
-//                     }).toList(),
-//                   ))
-//                 ],
-//               );
-//             },
-//           );
-//           Row(
-//             children: [
-//               SizedBox(
-//                 width: 40,
-//                 height: double.infinity,
-//                 child: Align(
-//                   alignment: Alignment.centerRight, //这里先暂时不考虑一行放不下的情况
-//                   child: Text('${index + 1}',
-//                       style: const TextStyle(color: Colors.grey)),
-//                 ),
-//               ),
-//               const SizedBox(width: 10),
-//               Expanded(child: LayoutBuilder(
-//                 builder: (BuildContext context, BoxConstraints constraints) {
-//                   final double maxLineWidth = constraints.maxWidth;
-//                   final List<String> lines = FunctionOne.splitTextIntoLines(
-//                       context, codeContext[index], maxLineWidth);
-//                   return Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: lines.map((e) {
-//                       return Text(e,
-//                           style: const TextStyle(color: Colors.grey));
-//                     }).toList(),
-//                   );
-//                 },
-//               ))
-//             ],
-//           );
-//         },
-//         itemCount: codeContext.length);
-//   }
-// }
 
 class _TopBar extends StatefulWidget {
   const _TopBar({Key? key}) : super(key: key);
@@ -170,18 +37,31 @@ class _TopBar extends StatefulWidget {
 class _TopBarState extends State<_TopBar> {
   @override
   Widget build(BuildContext context) {
-    final codeLines = context
-        .watch<RootDataModel>()
-        .lendHandModel
-        .showInfo
-        .codeContent
-        .length;
-    String codeText = context
-        .watch<RootDataModel>()
-        .lendHandModel
-        .showInfo
-        .codeContent
-        .join('\n');
+    ShowInfo showInfo = context.watch<RootDataModel>().lendHandModel.showInfo;
+    bool isSeekHelp = showInfo.curRightShowPage < 0;
+    int codeShowStatus = showInfo.codeShowStatus;
+    int codeLines = 0;
+    String codeText = '';
+    if (isSeekHelp) {
+      codeLines = showInfo.codeContent.length;
+      codeText = showInfo.codeContent.join('\n');
+    } else {
+      for (int i = 0; i < showInfo.rowCodes.length; i++) {
+        if (showInfo.rowCodes[i].status == 1) {
+          continue;
+        }
+        codeText += '${showInfo.rowCodes[i].text}\n';
+      }
+      if (codeShowStatus == 1) {
+        for (int i = 0; i < showInfo.rowCodes.length; i++) {
+          if (showInfo.rowCodes[i].status != 1) {
+            codeLines++;
+          }
+        }
+      } else {
+        codeLines = showInfo.rowCodes.length;
+      }
+    }
     return Container(
       height: 40,
       decoration: BoxDecoration(
@@ -193,6 +73,27 @@ class _TopBarState extends State<_TopBar> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('$codeLines lines', style: const TextStyle(color: Colors.grey)),
+          isSeekHelp
+              ? Container()
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 50),
+                    const Text('Unified', style: TextStyle(color: Colors.grey)),
+                    const SizedBox(width: 20),
+                    Switch(
+                        value: showInfo.codeShowStatus == 1,
+                        onChanged: (value) async {
+                          await context
+                              .read<RootDataModel>()
+                              .lendHand(4, list: [(value ? 1 : 2)]);
+                        }),
+                    const SizedBox(width: 20),
+                    const Text('Only succor',
+                        style: TextStyle(color: Colors.grey)),
+                    const SizedBox(width: 50),
+                  ],
+                ),
           ClipOval(
               child: Center(
                   child: SizedBox(

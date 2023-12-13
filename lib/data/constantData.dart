@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
 
 class ConstantData {
+  static const List<TextStyle> textStyle = [
+    TextStyle(
+        fontSize: 15,
+        color: Color(0xff0a3069),
+        letterSpacing: 1,
+        fontWeight: FontWeight.w500),
+    TextStyle(color: Colors.grey, fontSize: 13)
+  ];
+
+  static const List<Color> codeShowColors = [
+    Color(0xffffebe9),
+    Color(0xffe6ffec),
+    Color(0xffddf4ff),
+    Color(0xffffd7d5),
+    Color(0xffccffd8),
+    Color(0xffbbdfff),
+    Color(0xfff6f8fa)
+  ];
+
   static const List<IconData> showRouteTopBarIcons = [
     Icons.copy,
     Icons.image,

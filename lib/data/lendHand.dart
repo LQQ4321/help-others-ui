@@ -36,14 +36,49 @@ class SingleLendHand {
   }
 }
 
+class SingleRowCodeInfo {
+  late int originIndex;
+  late int copyIndex;
+  late int status; //0 ' ' 1 '-' 2 '+'
+  late String text;
+
+  SingleRowCodeInfo();
+
+  factory SingleRowCodeInfo.fromString(
+      int originIndex, int copyIndex, String singleText) {
+    SingleRowCodeInfo singleRowCodeInfo = SingleRowCodeInfo();
+    singleRowCodeInfo.originIndex = originIndex;
+    singleRowCodeInfo.copyIndex = copyIndex;
+    if (singleText[0] == ' ') {
+      singleRowCodeInfo.status = 0;
+      singleRowCodeInfo.originIndex = originIndex + 1;
+      singleRowCodeInfo.copyIndex = copyIndex + 1;
+    } else if (singleText[0] == '-') {
+      singleRowCodeInfo.status = 1;
+      singleRowCodeInfo.originIndex = originIndex + 1;
+    } else {
+      singleRowCodeInfo.status = 2;
+      singleRowCodeInfo.copyIndex = copyIndex + 1;
+    }
+    singleRowCodeInfo.text = singleText.substring(1);
+    return singleRowCodeInfo;
+  }
+}
+
 // 展示信息的网络请求流程，点击某位用户的名字按钮，
 //  通过seekHelpId开始第一次请求，获取到lendHand的列表信息，
 // 下面的方法是每次点击按钮后的通式
 // 1. 通过已有信息去获取相关文件的地址信息
 // 2. 通过前一次请求得到的文件地址信息，去请求文件
 class ShowInfo {
-  //应该请求数据成功才改变它
+  // (应该请求数据成功才改变它)
   int curRightShowPage = -1; //-1 求助 >0 帮助
+  // 0 seekHelpCode 正常一行一行展示 1 lendHandCode 正常一行一行展示
+  // 2 seekHelpCode 和 lendHandCode 一起展示，
+  // 3 seekHelpCode 和 lendHandCode 分开展示，(暂时不实现，有点难度)
+  int codeShowStatus = 0;
+  List<SingleRowCodeInfo> rowCodes = [];
+
   //seekHelper 和 lendHander 共有的一些东西
   // late String codePath; //代码文件的地址
   late List<String> codeContent; //代码文件 origin.txt diff.txt (按行读取也许不错)
@@ -55,6 +90,28 @@ class ShowInfo {
   ImageProvider imageProvider = MemoryImage(kTransparentImage);
 
 //lendHander私有
+
+  //对代码进行处理
+  void switchCodeShowStatus(int codeShowStatus) {
+    if (this.codeShowStatus == codeShowStatus) {
+      return;
+    }
+    this.codeShowStatus = codeShowStatus;
+  }
+
+  void parseRawCodeContent() {
+    rowCodes.clear();
+    for (int i = 0, originIndex = 0, copyIndex = 0;
+        i < codeContent.sublist(3).length;
+        i++) {
+      if (i != 0) {
+        originIndex = rowCodes[i - 1].originIndex;
+        copyIndex = rowCodes[i - 1].copyIndex;
+      }
+      rowCodes.add(SingleRowCodeInfo.fromString(
+          originIndex, copyIndex, codeContent[i + 3]));
+    }
+  }
 
   //获取要展示的数据
   Future<bool> requestShowData(int _curRightShowPage, String dbId) async {
@@ -85,7 +142,6 @@ class ShowInfo {
       debugPrint(error.toString());
       return false;
     });
-    debugPrint('2');
     //二阶段，根据之前得到的文件地址去获取真正的文件,这里是获取code文件,image直接通过前端获取
     List<Future<bool>> funcList = [];
     if (flag && codePath != null) {
@@ -97,9 +153,10 @@ class ShowInfo {
     await Future.wait(funcList).then((value) {
       flag = !value.contains(false);
     });
-    debugPrint('3');
     if (flag) {
       curRightShowPage = _curRightShowPage < -1 ? -1 : _curRightShowPage;
+      codeShowStatus = _curRightShowPage <= -1 ? 0 : 2;
+      parseRawCodeContent();
     }
     return flag;
   }

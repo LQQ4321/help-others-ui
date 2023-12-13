@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/lendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
-import 'package:help_them/pages/bodys/showWidget/codeCompareShow.dart';
 import 'package:help_them/pages/bodys/showWidget/codeshow.dart';
 import 'package:help_them/pages/bodys/showWidget/topBar.dart';
 import 'package:provider/provider.dart';
@@ -11,12 +11,6 @@ class ShowRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isCompare = context
-            .watch<RootDataModel>()
-            .lendHandModel
-            .showInfo
-            .curRightShowPage >=
-        0;
     return Row(
       children: [
         const _LeftBar(),
@@ -28,15 +22,22 @@ class ShowRoute extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(8)),
-              child: const TopBar(),
+              child: context
+                          .watch<RootDataModel>()
+                          .lendHandModel
+                          .showInfo
+                          .curRightShowPage <
+                      0
+                  ? const SeekHelpTopBar()
+                  : const LendHandTopBar(),
             ),
             const SizedBox(height: 20),
             Expanded(
                 child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(8)),
-              child: isCompare ? ScrollSyncWidget() : const CodeShow(),
-            ))
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: const CodeShow()))
           ],
         ))
       ],
@@ -54,6 +55,7 @@ class _LeftBar extends StatefulWidget {
 class _LeftBarState extends State<_LeftBar> {
   @override
   Widget build(BuildContext context) {
+    LendHandModel lendHandModel = context.watch<RootDataModel>().lendHandModel;
     return Container(
       width: 180,
       decoration: BoxDecoration(
@@ -83,11 +85,7 @@ class _LeftBarState extends State<_LeftBar> {
                   fontWeight: FontWeight.w500)),
           const SizedBox(height: 10),
           Expanded(
-              child: context
-                      .watch<RootDataModel>()
-                      .lendHandModel
-                      .showLendHandList
-                      .isEmpty
+              child: lendHandModel.showLendHandList.isEmpty
                   ? const Center(
                       child: Text(
                         'No helper',
@@ -99,11 +97,7 @@ class _LeftBarState extends State<_LeftBar> {
                     )
                   : ListView.builder(
                       itemExtent: 50,
-                      itemCount: context
-                          .watch<RootDataModel>()
-                          .lendHandModel
-                          .showLendHandList
-                          .length,
+                      itemCount: lendHandModel.showLendHandList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return TextButton(
                             onPressed: () async {
@@ -117,6 +111,13 @@ class _LeftBarState extends State<_LeftBar> {
                                 ], duration: 10);
                               }
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateColor.resolveWith(
+                                    (states) => lendHandModel
+                                                .showInfo.curRightShowPage ==
+                                            index
+                                        ? Colors.grey[200]!
+                                        : Colors.white)),
                             child: Text('${index + 1}',
                                 style: const TextStyle(color: Colors.grey)));
                       })),

@@ -78,6 +78,8 @@ class RootDataModel extends ChangeNotifier {
           .split(' ')[0]);
       list2.add(userData.userId);
       flag = await lendHandModel.lendAHand(list2, list);
+    } else if (option == 4) {
+      lendHandModel.showInfo.switchCodeShowStatus(list![0]);
     }
     notifyListeners();
     return flag;
