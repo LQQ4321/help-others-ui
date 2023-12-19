@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/lendHand.dart';
+import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/showWidget/codeshow.dart';
@@ -19,18 +20,11 @@ class ShowRoute extends StatelessWidget {
             child: Column(
           children: [
             Container(
-              height: 40,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(8)),
-              child: context
-                          .watch<RootDataModel>()
-                          .lendHandModel
-                          .showInfo
-                          .curRightShowPage <
-                      0
-                  ? const SeekHelpTopBar()
-                  : const LendHandTopBar(),
-            ),
+                height: 40,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8)),
+                child: const CodeShowTopBar()),
             const SizedBox(height: 20),
             Expanded(
                 child: Container(
@@ -56,6 +50,7 @@ class _LeftBarState extends State<_LeftBar> {
   @override
   Widget build(BuildContext context) {
     LendHandModel lendHandModel = context.watch<RootDataModel>().lendHandModel;
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
     return Container(
       width: 180,
       decoration: BoxDecoration(
@@ -65,7 +60,15 @@ class _LeftBarState extends State<_LeftBar> {
           const SizedBox(height: 10),
           ElevatedButton(
               onPressed: () async {
-                context.read<RootDataModel>().lendHand(2, list: [-1]);
+                bool flag = await context
+                    .read<RootDataModel>()
+                    .showOperate(1, list: [-1]);
+                if (!flag) {
+                  ToastOne.oneToast([
+                    'Request data fail',
+                    'The network is disconnected or the back-end is faulty.'
+                  ], duration: 10);
+                }
               },
               style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(const Size(160, 50)),
@@ -103,7 +106,7 @@ class _LeftBarState extends State<_LeftBar> {
                             onPressed: () async {
                               bool flag = await context
                                   .read<RootDataModel>()
-                                  .lendHand(2, list: [index]);
+                                  .showOperate(1, list: [index]);
                               if (!flag) {
                                 ToastOne.oneToast([
                                   'Request data fail',
@@ -113,11 +116,10 @@ class _LeftBarState extends State<_LeftBar> {
                             },
                             style: ButtonStyle(
                                 backgroundColor: MaterialStateColor.resolveWith(
-                                    (states) => lendHandModel
-                                                .showInfo.curRightShowPage ==
-                                            index
-                                        ? Colors.grey[200]!
-                                        : Colors.white)),
+                                    (states) =>
+                                        showInfo.curRightShowPage == index
+                                            ? Colors.grey[200]!
+                                            : Colors.white)),
                             child: Text('${index + 1}',
                                 style: const TextStyle(color: Colors.grey)));
                       })),
@@ -125,7 +127,18 @@ class _LeftBarState extends State<_LeftBar> {
           const SizedBox(height: 10),
           ElevatedButton(
               onPressed: () async {
-                context.read<RootDataModel>().switchRoute(4);
+                //在帮助之前应该先判断一下求助和帮助的是不是同一个人
+                bool flag = await context.read<RootDataModel>().userOperate(4);
+                if (!flag) {
+                  ToastOne.oneToast([
+                    'Lend hand fail',
+                    'The help-seeker and the helper cannot be the same person.'
+                  ], duration: 10);
+                  return;
+                }
+                await context
+                    .read<RootDataModel>()
+                    .userOperate(2, numList: [4]);
               },
               style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(const Size(160, 50)),

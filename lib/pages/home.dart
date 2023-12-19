@@ -53,10 +53,10 @@ class _TopBar extends StatelessWidget {
               Border(bottom: BorderSide(color: Color(0xffe7e8ec), width: 1.0))),
       child: Stack(
         children: [
-          Align(
+          const Align(
               alignment: Alignment.centerLeft,
               child: Row(children: [
-                const SizedBox(width: 20),
+                SizedBox(width: 20),
                 Text(
                   'help others',
                   style: TextStyle(

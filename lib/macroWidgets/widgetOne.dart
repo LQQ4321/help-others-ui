@@ -68,12 +68,14 @@ class MyPopupMenu extends StatefulWidget {
       required this.list,
       required this.callBack,
       this.revealText = true,
+      this.selected = false,
       this.iconData = Icons.keyboard_arrow_down_sharp})
       : super(key: key);
   final List<String> list; //选项
   final Function(int) callBack; //回调函数
   final IconData iconData; //图标
   final bool revealText; //是否显示文字
+  final bool selected;
 
   @override
   State<MyPopupMenu> createState() => _MyPopupMenuState();
@@ -97,7 +99,7 @@ class _MyPopupMenuState extends State<MyPopupMenu> {
           height: 30,
           padding: const EdgeInsets.only(left: 5, right: 5),
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: widget.selected ? Colors.grey[200] : Colors.white,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: Colors.black12)),
           child: widget.revealText
@@ -271,7 +273,7 @@ class _RectangleInputState extends State<RectangleInput> {
                 controller: widget.textEditingController,
                 obscureText: _obscureText,
                 maxLines: 1,
-                maxLength: 50,
+                maxLength: 100,
                 decoration: InputDecoration(
                   counterText: '',
                   border: InputBorder.none,

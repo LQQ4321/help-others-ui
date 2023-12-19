@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:help_them/data/config.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/pages/home.dart';
 import 'package:help_them/pages/login.dart';
@@ -7,8 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 void main() async {
-  Config.dio.interceptors.add(RequestInterceptor());
-
+  //需要在界面渲染之前就进行一些数据的处理
   RootDataModel rootDataModel = RootDataModel();
   await rootDataModel.initWebsite();
 
@@ -31,7 +29,7 @@ class MyApp extends StatelessWidget {
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
       home: Scaffold(
-        body: context.watch<RootDataModel>().isLogin
+        body: context.watch<RootDataModel>().userData.isLogin
             ? const Home()
             : const Login(),
       ),

@@ -7,8 +7,24 @@ class FunctionOne {
   // static bool judgeBan(int option,int ban,{int userBan = 0}) {
   //
   // }
+  // 0 default 1 green 2 red
+  static Map<String, TextStyle> getCodeTextStyle({int option = 0}) {
+    //这里也是引用
+    Map<String, TextStyle> theme = ConstantData.githubTheme;
+    if (option == 0) {
+      theme['root'] = const TextStyle(
+          color: Color(0xff333333), backgroundColor: Color(0xffffffff));
+    } else if (option == 1) {
+      theme['root'] = const TextStyle(
+          color: Color(0xff333333), backgroundColor: Color(0xffffebe9));
+    } else if (option == 2) {
+      theme['root'] = const TextStyle(
+          color: Color(0xff333333), backgroundColor: Color(0xffe6ffec));
+    }
+    return theme;
+  }
 
-  /// 计算文字宽度
+  //FIXME 计算文字宽度(有个问题,就是'\t'当作空格计算了，导致某些包含较多'\t'的行显示不完)
   static double calculateText(String text, TextStyle style) {
     final TextPainter textPainter = TextPainter(
         textAlign: TextAlign.left,

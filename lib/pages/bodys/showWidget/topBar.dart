@@ -2,58 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:help_them/data/constantData.dart';
 import 'package:help_them/data/lendHand.dart';
+import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/macroWidgets/dialogOne.dart';
+import 'package:help_them/macroWidgets/dialogTwo.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:provider/provider.dart';
 
-class SeekHelpTopBar extends StatefulWidget {
-  const SeekHelpTopBar({Key? key}) : super(key: key);
+class CodeShowTopBar extends StatefulWidget {
+  const CodeShowTopBar({Key? key}) : super(key: key);
 
   @override
-  State<SeekHelpTopBar> createState() => _SeekHelpTopBarState();
+  State<CodeShowTopBar> createState() => _CodeShowTopBarState();
 }
 
-class _SeekHelpTopBarState extends State<SeekHelpTopBar> {
-  bool _favorite = false;
-
+class _CodeShowTopBarState extends State<CodeShowTopBar> {
   @override
   Widget build(BuildContext context) {
-    LendHandModel lendHandModel = context.watch<RootDataModel>().lendHandModel;
-    SeekHelpModel seekHelpModel = context.watch<RootDataModel>().seekHelpModel;
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
+    bool isSeekHelp = showInfo.curRightShowPage < 0;
+    //看一下监听方法会不会报错
+    // SeekHelpModel seekHelpModel = context.watch<RootDataModel>().seekHelpModel;
     return Container(
-        height: 40,
-        margin: const EdgeInsets.only(left: 10, right: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
+      height: 40,
+      margin: const EdgeInsets.only(left: 10, right: 10),
+      child: Row(
+        children: [
+          //  左边是特性，右边是共有
+          Expanded(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                  child: isSeekHelp
+                      ? const _SeekHelpInfo()
+                      : const _LendHandInfo()),
+              const _LikeAndComment()
+            ],
+          )),
+          const SizedBox(width: 20),
+          Container(width: 1, color: Colors.black12),
+          const SizedBox(width: 20),
+          Row(
               mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (index) {
-                if (index == 1) {
-                  return const SizedBox(width: 20);
-                }
-                return Text(
-                  index == 0
-                      ? seekHelpModel
-                          .showSeekHelpList[seekHelpModel.curSeekHelpIndex]
-                          .uploadTime
-                      : (seekHelpModel
-                                  .showSeekHelpList[
-                                      seekHelpModel.curSeekHelpIndex]
-                                  .status ==
-                              0
-                          ? 'Unsolved'
-                          : 'Resolved'),
-                  style: const TextStyle(color: Colors.black38),
-                );
-              }),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(ConstantData.showRouteTopBarIcons.length,
-                  (index) {
+              children: List.generate(2, (index) {
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -71,139 +64,195 @@ class _SeekHelpTopBarState extends State<SeekHelpTopBar> {
                                             ToastOne.smallTip(
                                                 context, 'Copied');
                                             Clipboard.setData(ClipboardData(
-                                                text: lendHandModel
-                                                    .showInfo.problemLink));
+                                                text: showInfo.problemLink));
                                           } else if (index == 1) {
-                                            DialogOne.showAPicture(
-                                                context,
-                                                lendHandModel
-                                                    .showInfo.imageProvider);
-                                          } else if (index == 2) {
-                                            DialogOne.showTextField(context,
-                                                lendHandModel.showInfo.remark);
-                                          } else if (index == 3) {
-                                            setState(() {
-                                              _favorite = !_favorite;
-                                            });
-                                          } else {}
+                                            DialogOne.showAPicture(context,
+                                                showInfo.imageProvider);
+                                          }
                                         },
                                         child: Icon(
-                                          index == 3 && !_favorite
-                                              ? Icons.favorite_border
-                                              : ConstantData
-                                                  .showRouteTopBarIcons[index],
-                                          color: index == 3 && _favorite
-                                              ? Colors.red[200]
-                                              : Colors.black12,
+                                          ConstantData
+                                              .showRouteTopBarIcons[index],
+                                          color: Colors.black12,
                                           size: 20,
                                         ));
                                   },
                                 )))),
-                    index < 3
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                  index == 0
-                                      ? 'Link'
-                                      : (index == 1 ? 'Screenshot' : 'Remark'),
-                                  style:
-                                      const TextStyle(color: Colors.black38)),
-                              const SizedBox(width: 5)
-                            ],
-                          )
-                        : Container()
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(index == 0 ? 'Link' : 'Screenshot',
+                            style: const TextStyle(color: Colors.black38)),
+                        const SizedBox(width: 5)
+                      ],
+                    )
                   ],
                 );
-              }),
-            )
-          ],
-        ));
+              }))
+        ],
+      ),
+    );
   }
 }
 
-class LendHandTopBar extends StatefulWidget {
-  const LendHandTopBar({Key? key}) : super(key: key);
+class _LikeAndComment extends StatefulWidget {
+  const _LikeAndComment({Key? key}) : super(key: key);
 
   @override
-  State<LendHandTopBar> createState() => _LendHandTopBarState();
+  State<_LikeAndComment> createState() => _LikeAndCommentState();
 }
 
-class _LendHandTopBarState extends State<LendHandTopBar> {
-  bool _favorite = false;
+class _LikeAndCommentState extends State<_LikeAndComment> {
+  late bool favorite;
+
+  @override
+  Widget build(BuildContext context) {
+    //TODO 如果还调用notifyListeners，这里好像就死循环了,可能是更新不能及时显示的原因
+    favorite = context.watch<RootDataModel>().syncUserOperate(1);
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (index) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipOval(
+                child: Center(
+                    child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Builder(
+                          //套一层，免得ToastOne.smallTip定位不到具体的位置
+                          builder: (context) {
+                            return TextButton(
+                                onPressed: () async {
+                                  if (index == 0) {
+                                    DialogOne.showTextField(
+                                        context, showInfo.remark);
+                                  } else if (index == 1) {
+                                    //连续点两下会怎么样？？？
+                                    //点赞不能取消
+                                    if (favorite) {
+                                      ToastOne.oneToast([
+                                        'Cancel fail',
+                                        'Once you like, you can not cancel it.'
+                                      ], duration: 10);
+                                      return;
+                                    }
+                                    //不能自己给自己点赞
+                                    if (!context
+                                        .read<RootDataModel>()
+                                        .syncUserOperate(2)) {
+                                      ToastOne.oneToast([
+                                        'Like fail',
+                                        'Can not give yourself a like.'
+                                      ], duration: 10);
+                                      return;
+                                    }
+                                    bool flag = await context
+                                        .read<RootDataModel>()
+                                        .userOperate(5);
+                                    if (!flag) {
+                                      ToastOne.oneToast([
+                                        'Like fail',
+                                        'The network is disconnected or the back-end is faulty.'
+                                      ], duration: 10);
+                                    }
+                                  } else {
+                                    await DialogTwo.showTextField(context);
+                                  }
+                                },
+                                child: Icon(
+                                  index == 1 && !favorite
+                                      ? Icons.favorite_border
+                                      : ConstantData
+                                          .showRouteTopBarIcons[index + 2],
+                                  color: index == 1 && favorite
+                                      ? Colors.red[200]
+                                      : Colors.black12,
+                                  size: 20,
+                                ));
+                          },
+                        )))),
+            index < 1
+                ? const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Remark', style: TextStyle(color: Colors.black38)),
+                      SizedBox(width: 5)
+                    ],
+                  )
+                : Container()
+          ],
+        );
+      }),
+    );
+  }
+}
+
+class _LendHandInfo extends StatelessWidget {
+  const _LendHandInfo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     LendHandModel lendHandModel = context.watch<RootDataModel>().lendHandModel;
-    return Container(
-        height: 40,
-        margin: const EdgeInsets.only(left: 10, right: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (index) {
-                if (index == 1) {
-                  return const SizedBox(width: 20);
-                }
-                return Text(
-                  index == 0
-                      ? lendHandModel
-                          .showLendHandList[
-                              lendHandModel.showInfo.curRightShowPage]
-                          .uploadTime
-                      : (lendHandModel
-                                  .showLendHandList[
-                                      lendHandModel.showInfo.curRightShowPage]
-                                  .status ==
-                              0
-                          ? 'Not adopted'
-                          : 'Adopted'),
-                  style: const TextStyle(color: Colors.black38),
-                );
-              }),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                  ConstantData.showRouteTopBarIcons.length - 3, (index) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ClipOval(
-                        child: Center(
-                            child: SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: Builder(
-                                  builder: (context) {
-                                    return TextButton(
-                                        onPressed: () async {
-                                          if (index == 0) {
-                                            setState(() {
-                                              _favorite = !_favorite;
-                                            });
-                                          } else {}
-                                        },
-                                        child: Icon(
-                                          index == 0 && !_favorite
-                                              ? Icons.favorite_border
-                                              : ConstantData
-                                                      .showRouteTopBarIcons[
-                                                  index + 3],
-                                          color: index == 0 && _favorite
-                                              ? Colors.red[200]
-                                              : Colors.black12,
-                                          size: 20,
-                                        ));
-                                  },
-                                ))))
-                  ],
-                );
-              }),
-            )
-          ],
-        ));
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        if (index % 2 == 1) {
+          return const SizedBox(width: 20);
+        }
+        return SizedBox(
+          width: 130,
+          child: Text(
+            index == 0
+                ? lendHandModel
+                    .showLendHandList[showInfo.curRightShowPage].lendHanderName
+                : (index == 2
+                    ? lendHandModel
+                        .showLendHandList[showInfo.curRightShowPage].uploadTime
+                    : (lendHandModel.showLendHandList[showInfo.curRightShowPage]
+                                .status ==
+                            0
+                        ? 'Not adopted'
+                        : 'Adopted')),
+            style: const TextStyle(color: Colors.black38),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _SeekHelpInfo extends StatelessWidget {
+  const _SeekHelpInfo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    SeekHelpModel seekHelpModel = context.watch<RootDataModel>().seekHelpModel;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        if (index % 2 == 1) {
+          return const SizedBox(width: 20);
+        }
+        return SizedBox(
+          width: 130,
+          child: Text(
+            index == 0
+                ? seekHelpModel.singleSeekHelp.seekHelperName
+                : (index == 2
+                    ? seekHelpModel.singleSeekHelp.uploadTime
+                    : (seekHelpModel.singleSeekHelp.status == 0
+                        ? 'Unsolved'
+                        : 'Resolved')),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: const TextStyle(color: Colors.black38),
+          ),
+        );
+      }),
+    );
   }
 }

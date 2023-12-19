@@ -1,4 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/comment.dart';
+
+class CommentCell extends StatefulWidget {
+  const CommentCell({Key? key, required this.singleComment}) : super(key: key);
+  final SingleComment singleComment;
+
+  @override
+  State<CommentCell> createState() => _CommentCellState();
+}
+
+class _CommentCellState extends State<CommentCell> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
 
 class DateTimePicker extends StatefulWidget {
   const DateTimePicker(

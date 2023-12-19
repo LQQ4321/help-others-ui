@@ -48,6 +48,7 @@ dev_dependencies:
   intl: ^0.18.1
   transparent_image: ^2.0.1
   adaptive_scrollbar: ^2.1.2
+  flutter_highlight: ^0.7.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

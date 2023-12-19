@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:help_them/data/lendHand.dart';
+import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
+import 'package:help_them/pages/bodys/showWidget/codeHighLight.dart';
 import 'package:provider/provider.dart';
-
-import 'codeCompareShow.dart';
 
 class CodeShow extends StatefulWidget {
   const CodeShow({Key? key}) : super(key: key);
@@ -21,7 +20,8 @@ class _CodeShowState extends State<CodeShow> {
       children: [
         const _TopBar(),
         Container(height: 1, color: Colors.black12),
-        const Expanded(child: CodeRowShow())
+        const Expanded(child: CodeHighLight())
+        // const Expanded(child: CodeRowShow())
       ],
     );
   }
@@ -37,7 +37,7 @@ class _TopBar extends StatefulWidget {
 class _TopBarState extends State<_TopBar> {
   @override
   Widget build(BuildContext context) {
-    ShowInfo showInfo = context.watch<RootDataModel>().lendHandModel.showInfo;
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
     bool isSeekHelp = showInfo.curRightShowPage < 0;
     int codeShowStatus = showInfo.codeShowStatus;
     int codeLines = 0;
@@ -86,7 +86,7 @@ class _TopBarState extends State<_TopBar> {
                         onChanged: (value) async {
                           await context
                               .read<RootDataModel>()
-                              .lendHand(4, list: [(value ? 1 : 2)]);
+                              .showOperate(2, list: [(value ? 1 : 2)]);
                         }),
                     const SizedBox(width: 20),
                     const Text('Only succor',

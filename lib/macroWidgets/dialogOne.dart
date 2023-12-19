@@ -5,16 +5,16 @@ import 'package:help_them/macroWidgets/widgetTwo.dart';
 class DialogOne {
   //代码复用
   static Future<dynamic> showMyDialog(BuildContext context, Widget widget,
-      {bool isBarrierDismissible = true}) async {
+      {bool isBarrierDismissible = true, EdgeInsetsGeometry? padding}) async {
     return showDialog<dynamic>(
         context: context,
         barrierDismissible: isBarrierDismissible,
         builder: (BuildContext context) {
-          return AlertDialog(content: widget);
+          return AlertDialog(content: widget, contentPadding: padding);
         });
   }
 
-  //展示一张图片
+  //展示一段文本
   static Future<dynamic> showTextField(BuildContext context, String text) {
     return showMyDialog(context, Builder(builder: (context) {
       return SizedBox(

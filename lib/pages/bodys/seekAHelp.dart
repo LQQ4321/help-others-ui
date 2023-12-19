@@ -51,13 +51,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
   @override
   Widget build(BuildContext context) {
     if (!widget.isSeekHelp) {
-      int curSeekHelpIndex =
-          context.watch<RootDataModel>().seekHelpModel.curSeekHelpIndex;
-      language = context
-          .watch<RootDataModel>()
-          .seekHelpModel
-          .showSeekHelpList[curSeekHelpIndex]
-          .language;
+      language =
+          context.watch<RootDataModel>().seekHelpModel.singleSeekHelp.language;
     }
     return Container(
       margin: const EdgeInsets.only(left: 150, right: 150),
@@ -226,14 +221,13 @@ class _SeekAHelpState extends State<SeekAHelp> {
                             ],
                             (p0) => isConfirm = p0);
                         if (isConfirm) {
-                          context
-                              .read<RootDataModel>()
-                              .switchRoute(widget.isSeekHelp ? 1 : 3);
+                          await context.read<RootDataModel>().userOperate(2,
+                              numList: [widget.isSeekHelp ? 1 : 3]);
                         }
                       } else {
                         int flag = 0;
                         if (!widget.isSeekHelp) {
-                          flag = await context.read<RootDataModel>().lendHand(3,
+                          flag = await context.read<RootDataModel>().lendHand(2,
                               list: _codeContent,
                               list2: [
                                 textEditingControllers[0].text,
@@ -252,9 +246,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                               list2: _imageContent);
                         }
                         if (flag == 0) {
-                          context
-                              .read<RootDataModel>()
-                              .switchRoute(widget.isSeekHelp ? 1 : 3);
+                          await context.read<RootDataModel>().userOperate(2,
+                              numList: [widget.isSeekHelp ? 1 : 3]);
                         }
                         ToastOne.oneToast(
                             ConstantData.seekAHelpPromptMessage[flag],

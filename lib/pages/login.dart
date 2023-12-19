@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/data/userData.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:provider/provider.dart';
@@ -18,19 +19,17 @@ class LoginState extends State<Login> {
   void initState() {
     textEditingControllers =
         List.generate(2, (index) => TextEditingController());
-    if (context.read<RootDataModel>().userData.rememberMe) {
-      textEditingControllers[0].text =
-          context.read<RootDataModel>().userData.name;
-      textEditingControllers[1].text =
-          context.read<RootDataModel>().userData.password;
+    UserData userData = context.read<RootDataModel>().userData;
+    if (userData.rememberMe) {
+      textEditingControllers[0].text = userData.name;
+      textEditingControllers[1].text = userData.password;
     }
     super.initState();
   }
 
-
   @override
   void dispose() {
-    for(int i = 0;i < textEditingControllers.length;i++){
+    for (int i = 0; i < textEditingControllers.length; i++) {
       textEditingControllers[i].dispose();
     }
     super.dispose();
@@ -70,8 +69,8 @@ class LoginState extends State<Login> {
                         value:
                             context.watch<RootDataModel>().userData.rememberMe,
                         activeColor: Colors.black45,
-                        onChanged: (_) {
-                          context.read<RootDataModel>().changeRememberMe();
+                        onChanged: (_) async {
+                          await context.read<RootDataModel>().userOperate(3);
                         }),
                     const Text('Remember me')
                   ],
@@ -93,9 +92,12 @@ class LoginState extends State<Login> {
                 width: 400,
                 child: ElevatedButton(
                     onPressed: () async {
-                      int flag = await context.read<RootDataModel>().login(
-                          textEditingControllers[0].text,
-                          textEditingControllers[1].text);
+                      int flag = await context
+                          .read<RootDataModel>()
+                          .userOperate(1, strList: [
+                        textEditingControllers[0].text,
+                        textEditingControllers[1].text
+                      ]);
                       //这里的flag是Future得到的，之前owo_user项目这样写会有警告
                       if (flag == 1) {
                         ToastOne.oneToast([

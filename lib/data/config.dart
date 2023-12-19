@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:file_picker/file_picker.dart';
 
 class Config {
   // TODO 再服务器上调试应该修改的地方
-  static final dio = Dio();
-  // static final dio =
-  //     Dio(BaseOptions(baseUrl: 'http://127.0.0.1:8080', headers: {
-  //   'Access-Control-Allow-Origin': '*', // 允许来自任何域名的请求
-  // }));
+  // static final dio = Dio();
+  static final dio =
+      Dio(BaseOptions(baseUrl: 'http://127.0.0.1:8080', headers: {
+    'Access-Control-Allow-Origin': '*', // 允许来自任何域名的请求
+  }));
   static const String requestJson = '/requestJson';
   static const String requestForm = '/requestForm';
   static const String status = 'status';
@@ -42,30 +41,3 @@ class Config {
   }
 }
 
-class RequestInterceptor extends Interceptor {
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // if(RootDataModel.name == null){
-    //   debugPrint('name is null');
-    //   return;
-    // }
-    // return;
-    handler.next(options);
-  }
-}
-
-
-/*
-package main
-
-import(
-	"fmt"
-)
-
-func main(){
-	var a,b int
-	fmt.Scanf("%d %d",&a,&b)
-	fmt.Println(a + b)
-}
-
-* */

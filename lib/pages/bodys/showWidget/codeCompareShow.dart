@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:help_them/data/constantData.dart';
-import 'package:help_them/data/lendHand.dart';
+import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/functions/functionOne.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +28,7 @@ class _CodeRowShowState extends State<CodeRowShow> {
   @override
   Widget build(BuildContext context) {
     //这些复杂数据类型应该都是引用
-    ShowInfo showInfo = context.watch<RootDataModel>().lendHandModel.showInfo;
+    ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
     int codeLines = 0;
     if (showInfo.codeShowStatus == 0) {
       codeLines = showInfo.codeContent.length;
@@ -211,30 +211,6 @@ class _SimpleRowShow extends StatelessWidget {
     );
   }
 }
-
-// class EqualWidthText extends StatelessWidget {
-//   final String text;
-//   final double characterWidth;
-//
-//   EqualWidthText({required this.text, required this.characterWidth});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return RichText(
-//       text: TextSpan(
-//         children: text.split('').map((char) {
-//           return WidgetSpan(
-//             child: Container(
-//               width: characterWidth,
-//               alignment: Alignment.center,
-//               child: Center(child: Text(char, style: TextStyle(fontSize: 16)),),
-//             ),
-//           );
-//         }).toList(),
-//       ),
-//     );
-//   }
-// }
 
 // class _SimpleRowShow extends StatelessWidget {
 //   const _SimpleRowShow({Key? key, required this.text, required this.rowIndex})

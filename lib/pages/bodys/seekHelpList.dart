@@ -42,7 +42,9 @@ class _TopBarState extends State<_TopBar> {
               height: 50,
               child: TextButton(
                   onPressed: () async {
-                    context.read<RootDataModel>().switchRoute(2);
+                    await context
+                        .read<RootDataModel>()
+                        .userOperate(2, numList: [2]);
                   },
                   child: const Icon(
                     Icons.add_box,
@@ -156,6 +158,12 @@ class _BodyTopTitle extends StatelessWidget {
                             child: MyPopupMenu(
                                 list: ConstantData.seekHelpOptionList[index],
                                 iconData: Icons.sort,
+                                selected: context
+                                            .watch<RootDataModel>()
+                                            .seekHelpModel
+                                            .filterOrder +
+                                        1 ==
+                                    index,
                                 callBack: (a) {
                                   context
                                       .read<RootDataModel>()
