@@ -44,9 +44,9 @@ class UserData {
         return false;
       }
       if (list[0] == 'seekHelp') {
-        seekHelpLikeList.add(list[2]);
+        seekHelpLikeList.add(list[1]);
       } else {
-        lendHandLikeList.add(list[2]);
+        lendHandLikeList.add(list[1]);
       }
       return true;
     }).onError((error, stackTrace) {

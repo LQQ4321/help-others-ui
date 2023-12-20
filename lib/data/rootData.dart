@@ -4,6 +4,7 @@ import 'package:help_them/data/lendHand.dart';
 import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/userData.dart';
 import 'package:help_them/data/seekHelp.dart';
+import 'package:intl/intl.dart';
 
 //我们肯定不能将所有的notifyListeners()全部放到一个class里面，所以就需要就进行拆分。
 //但是拆分后他们还是有联系的，也就是互相依赖的意思
@@ -23,6 +24,37 @@ class RootDataModel extends ChangeNotifier {
   LendHandModel lendHandModel = LendHandModel();
   ShowInfo showInfo = ShowInfo();
   CommentModel commentModel = CommentModel();
+
+  //Comment
+  Future<dynamic> commentOperate(int option, {String text = ''}) async {
+    dynamic flag;
+    if (option == 1) {
+      int type = 0;
+      String seekOrLendId = seekHelpModel.singleSeekHelp.seekHelpId;
+      if (showInfo.curRightShowPage >= 0) {
+        type = 1;
+        seekOrLendId = lendHandModel
+            .showLendHandList[showInfo.curRightShowPage].lendHandId;
+      }
+      flag = await commentModel.requestCommentList(type, seekOrLendId);
+    } else if (option == 2) {
+      List<String> list = [];
+      list.add('0');
+      list.add(seekHelpModel.singleSeekHelp.seekHelpId);
+      if (showInfo.curRightShowPage >= 0) {
+        list[0] = '1';
+        list[1] = lendHandModel
+            .showLendHandList[showInfo.curRightShowPage].lendHandId;
+      }
+      list.add(text);
+      list.add(DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()));
+      list.add(userData.name);
+      list.add(userData.userId);
+      flag = await commentModel.sendAComment(list);
+    }
+    notifyListeners();
+    return flag;
+  }
 
   // SeekHelp
   Future<dynamic> seekHelp(int option,
@@ -75,6 +107,8 @@ class RootDataModel extends ChangeNotifier {
         //不存在未解决的求助
         flag = 2;
       } else {
+        debugPrint(
+            '${tempSingleSeekHelp.seekHelpId} ${tempSingleSeekHelp.status} ${tempSingleSeekHelp.seekHelperName} ${tempSingleSeekHelp.uploadTime}');
         flag = await lendHandModel
             .requestLendHandList(tempSingleSeekHelp.seekHelpId);
         if (flag) {
@@ -169,9 +203,7 @@ class RootDataModel extends ChangeNotifier {
             .showLendHandList[showInfo.curRightShowPage].lendHandId;
       }
       flag = userData.isLike(showInfo.curRightShowPage < 0, dbId);
-      debugPrint('${seekHelpModel.singleSeekHelp.status}  $flag');
       //免得造成死循环
-      return flag;
     } else if (option == 2) {
       flag = true;
       if (showInfo.curRightShowPage < 0) {
@@ -185,9 +217,9 @@ class RootDataModel extends ChangeNotifier {
           flag = false;
         }
       }
-      return flag;
     }
-    notifyListeners();
+    //不应该调用，理论上来说是会造成死循环的
+    // notifyListeners();
     return flag;
   }
 

@@ -7,6 +7,7 @@ import 'package:help_them/macroWidgets/dialogOne.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:help_them/macroWidgets/widgetTwo.dart';
 import 'package:provider/provider.dart';
 
 class SeekAHelp extends StatefulWidget {
@@ -19,7 +20,6 @@ class SeekAHelp extends StatefulWidget {
 
 class _SeekAHelpState extends State<SeekAHelp> {
   late List<TextEditingController> textEditingControllers;
-  Color _color = Colors.black12;
   String _imageFileInfo = 'Please select a screenshot of the problem';
   String _codeFileInfo = 'Please select the code file';
 
@@ -171,37 +171,10 @@ class _SeekAHelpState extends State<SeekAHelp> {
                 )
               : Container(),
           const SizedBox(height: 20),
-          Expanded(
-              child: Container(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                border: Border.all(color: _color)),
-            child: Focus(
-              onFocusChange: (hasFocus) {
-                setState(() {
-                  if (hasFocus) {
-                    _color = Colors.black;
-                  } else {
-                    _color = Colors.black12;
-                  }
-                });
-              },
-              child: Expanded(
-                child: TextField(
-                  controller: textEditingControllers[widget.isSeekHelp ? 2 : 0],
-                  maxLines: 100,
-                  maxLength: 1000,
-                  decoration: const InputDecoration(
-                      counterText: '',
-                      border: InputBorder.none,
-                      helperText: 'Remark'),
-                ),
-              ),
-            ),
-          )),
+          FlexInputField(
+              textEditingController:
+                  textEditingControllers[widget.isSeekHelp ? 2 : 0],
+              helperText: 'Remark'),
           const SizedBox(height: 20),
           Row(
               mainAxisAlignment: MainAxisAlignment.center,

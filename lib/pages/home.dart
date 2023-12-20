@@ -107,6 +107,33 @@ class _TopBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
+                    onPressed: () async {
+                      dynamic flag =
+                          await context.read<RootDataModel>().lendHand(3);
+                      List<String> list = [];
+                      if (flag == 2) {
+                        list = [
+                          'Thank you',
+                          'But there are no unresolved requests for help.'
+                        ];
+                      } else if (!flag) {
+                        list = [
+                          'Request data fail',
+                          'This could be due to network problems or server errors.'
+                        ];
+                      } else {
+                        list = [
+                          'Thank you',
+                          'Give someone a rose, leave fragrance in your hand.'
+                        ];
+                      }
+                      ToastOne.oneToast(list,
+                          infoStatus: (list[0] == 'Thank you') ? 0 : 2);
+                    },
+                    splashRadius: 20,
+                    icon: const Icon(Icons.handshake_outlined)),
+                const SizedBox(width: 10),
+                IconButton(
                     onPressed: () {},
                     splashRadius: 20,
                     icon: const Icon(Icons.person_outline)),

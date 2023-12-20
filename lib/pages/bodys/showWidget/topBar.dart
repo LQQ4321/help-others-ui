@@ -6,7 +6,7 @@ import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/macroWidgets/dialogOne.dart';
-import 'package:help_them/macroWidgets/dialogTwo.dart';
+import 'package:help_them/pages/bodys/showWidget/commentDialog.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:provider/provider.dart';
 
@@ -159,7 +159,19 @@ class _LikeAndCommentState extends State<_LikeAndComment> {
                                       ], duration: 10);
                                     }
                                   } else {
-                                    await DialogTwo.showTextField(context);
+                                    bool flag = await context
+                                        .read<RootDataModel>()
+                                        .commentOperate(1);
+                                    if (!flag) {
+                                      ToastOne.oneToast([
+                                        'Request data fail',
+                                        'This could be due to network problems or server errors.'
+                                      ]);
+                                      return;
+                                    }
+                                    await DialogOne.showMyDialog(
+                                        context, const CommentDialog(),
+                                        padding: EdgeInsets.zero);
                                   }
                                 },
                                 child: Icon(
@@ -203,22 +215,19 @@ class _LendHandInfo extends StatelessWidget {
         if (index % 2 == 1) {
           return const SizedBox(width: 20);
         }
-        return SizedBox(
-          width: 130,
-          child: Text(
-            index == 0
-                ? lendHandModel
-                    .showLendHandList[showInfo.curRightShowPage].lendHanderName
-                : (index == 2
-                    ? lendHandModel
-                        .showLendHandList[showInfo.curRightShowPage].uploadTime
-                    : (lendHandModel.showLendHandList[showInfo.curRightShowPage]
-                                .status ==
-                            0
-                        ? 'Not adopted'
-                        : 'Adopted')),
-            style: const TextStyle(color: Colors.black38),
-          ),
+        return Text(
+          index == 0
+              ? lendHandModel
+                  .showLendHandList[showInfo.curRightShowPage].lendHanderName
+              : (index == 2
+                  ? lendHandModel
+                      .showLendHandList[showInfo.curRightShowPage].uploadTime
+                  : (lendHandModel.showLendHandList[showInfo.curRightShowPage]
+                              .status ==
+                          0
+                      ? 'Not adopted'
+                      : 'Adopted')),
+          style: const TextStyle(color: Colors.black38),
         );
       }),
     );
@@ -237,20 +246,17 @@ class _SeekHelpInfo extends StatelessWidget {
         if (index % 2 == 1) {
           return const SizedBox(width: 20);
         }
-        return SizedBox(
-          width: 130,
-          child: Text(
-            index == 0
-                ? seekHelpModel.singleSeekHelp.seekHelperName
-                : (index == 2
-                    ? seekHelpModel.singleSeekHelp.uploadTime
-                    : (seekHelpModel.singleSeekHelp.status == 0
-                        ? 'Unsolved'
-                        : 'Resolved')),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: const TextStyle(color: Colors.black38),
-          ),
+        return Text(
+          index == 0
+              ? seekHelpModel.singleSeekHelp.seekHelperName
+              : (index == 2
+                  ? seekHelpModel.singleSeekHelp.uploadTime
+                  : (seekHelpModel.singleSeekHelp.status == 0
+                      ? 'Unsolved'
+                      : 'Resolved')),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          style: const TextStyle(color: Colors.black38),
         );
       }),
     );
