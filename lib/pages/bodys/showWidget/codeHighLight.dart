@@ -55,84 +55,91 @@ class _CodeHighLightState extends State<CodeHighLight> {
         }
       }
     }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double textWidth = 0;
-        if (showInfo.codeShowStatus == 0) {
-          for (int i = 0; i < showInfo.codeContent.length; i++) {
-            textWidth = max(
-                textWidth,
-                FunctionOne.calculateText(
-                    showInfo.codeContent[i], ConstantData.textStyle[0]));
-          }
-        } else if (showInfo.codeShowStatus == 2 ||
-            showInfo.codeShowStatus == 1) {
-          for (int i = 0; i < showInfo.rowCodes.length; i++) {
-            if (showInfo.codeShowStatus == 1 &&
-                showInfo.rowCodes[i].status == 1) {
-              continue;
-            }
-            textWidth = max(
-                textWidth,
-                FunctionOne.calculateText(
-                    showInfo.rowCodes[i].text, ConstantData.textStyle[0]));
-          }
-        }
-        return AdaptiveScrollbar(
-            controller: verticalScroll,
-            width: width,
-            scrollToClickDelta: 75,
-            scrollToClickFirstDelay: 200,
-            scrollToClickOtherDelay: 50,
-            sliderSpacing: const EdgeInsets.all(0),
-            sliderDecoration: const BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.all(Radius.circular(0.0))),
-            sliderActiveDecoration: const BoxDecoration(
-                color: Color.fromRGBO(206, 206, 206, 100),
-                borderRadius: BorderRadius.all(Radius.circular(0.0))),
-            underColor: Colors.transparent,
-            child: AdaptiveScrollbar(
-                underSpacing: EdgeInsets.only(bottom: width),
-                controller: horizontalScroll,
-                width: width,
-                position: ScrollbarPosition.bottom,
-                sliderDecoration: const BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.all(Radius.circular(0.0))),
-                sliderActiveDecoration: const BoxDecoration(
-                    color: Color.fromRGBO(206, 206, 206, 100),
-                    borderRadius: BorderRadius.all(Radius.circular(0.0))),
-                underColor: Colors.transparent,
-                child: SingleChildScrollView(
-                    controller: horizontalScroll,
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                        width: max(
-                            textWidth +
-                                (showInfo.codeShowStatus == 0 ||
-                                        showInfo.codeShowStatus == 1
-                                    ? 70
-                                    : 120),
-                            constraints.maxWidth),
-                        child: ListView.builder(
-                            controller: verticalScroll,
-                            itemCount: codeLines,
-                            itemExtent: 20,
-                            itemBuilder: (BuildContext context, int index) {
-                              return (showInfo.codeShowStatus == 0 ||
-                                      showInfo.codeShowStatus == 1)
-                                  ? _SimpleRowShow(
-                                      text: _getRowText(showInfo, index),
-                                      rowIndex: index + 1,
-                                      lang: language)
-                                  : _RowUnifiedShow(
-                                      singleRowCodeInfo:
-                                          showInfo.rowCodes[index],
-                                      lang: language);
-                            })))));
-      },
-    );
+    return (showInfo.curRightShowPage >= 0 && showInfo.rowCodes.isEmpty)
+        ? const Center(
+            child: Text('The modified file is the same as the original file',
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w600)),
+          )
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              double textWidth = 0;
+              if (showInfo.codeShowStatus == 0) {
+                for (int i = 0; i < showInfo.codeContent.length; i++) {
+                  textWidth = max(
+                      textWidth,
+                      FunctionOne.calculateText(
+                          showInfo.codeContent[i], ConstantData.textStyle[0]));
+                }
+              } else if (showInfo.codeShowStatus == 2 ||
+                  showInfo.codeShowStatus == 1) {
+                for (int i = 0; i < showInfo.rowCodes.length; i++) {
+                  if (showInfo.codeShowStatus == 1 &&
+                      showInfo.rowCodes[i].status == 1) {
+                    continue;
+                  }
+                  textWidth = max(
+                      textWidth,
+                      FunctionOne.calculateText(showInfo.rowCodes[i].text,
+                          ConstantData.textStyle[0]));
+                }
+              }
+              return AdaptiveScrollbar(
+                  controller: verticalScroll,
+                  width: width,
+                  scrollToClickDelta: 75,
+                  scrollToClickFirstDelay: 200,
+                  scrollToClickOtherDelay: 50,
+                  sliderSpacing: const EdgeInsets.all(0),
+                  sliderDecoration: const BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                  sliderActiveDecoration: const BoxDecoration(
+                      color: Color.fromRGBO(206, 206, 206, 100),
+                      borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                  underColor: Colors.transparent,
+                  child: AdaptiveScrollbar(
+                      underSpacing: EdgeInsets.only(bottom: width),
+                      controller: horizontalScroll,
+                      width: width,
+                      position: ScrollbarPosition.bottom,
+                      sliderDecoration: const BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                      sliderActiveDecoration: const BoxDecoration(
+                          color: Color.fromRGBO(206, 206, 206, 100),
+                          borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                      underColor: Colors.transparent,
+                      child: SingleChildScrollView(
+                          controller: horizontalScroll,
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                              width: max(
+                                  textWidth +
+                                      (showInfo.codeShowStatus == 0 ||
+                                              showInfo.codeShowStatus == 1
+                                          ? 70
+                                          : 120),
+                                  constraints.maxWidth),
+                              child: ListView.builder(
+                                  controller: verticalScroll,
+                                  itemCount: codeLines,
+                                  itemExtent: 20,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return (showInfo.codeShowStatus == 0 ||
+                                            showInfo.codeShowStatus == 1)
+                                        ? _SimpleRowShow(
+                                            text: _getRowText(showInfo, index),
+                                            rowIndex: index + 1,
+                                            lang: language)
+                                        : _RowUnifiedShow(
+                                            singleRowCodeInfo:
+                                                showInfo.rowCodes[index],
+                                            lang: language);
+                                  })))));
+            },
+          );
   }
 
   //这里为了不提前额外构建一个字符串数组，而是使用的时候再获取，有点耗费时间 时间复杂度 : n ^ 2

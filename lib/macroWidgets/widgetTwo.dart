@@ -34,17 +34,15 @@ class _FlexInputFieldState extends State<FlexInputField> {
             }
           });
         },
-        child: Expanded(
-          //FIXME flutter run 可以输入，但flutter build 无法输入
-          child: TextField(
-            controller: widget.textEditingController,
-            maxLines: 100,
-            maxLength: 1000,
-            decoration: InputDecoration(
-                counterText: '',
-                border: InputBorder.none,
-                helperText: widget.helperText),
-          ),
+        //FIXME flutter run 可以输入，但flutter build 无法输入
+        child: TextField(
+          controller: widget.textEditingController,
+          maxLines: 100,
+          maxLength: 1000,
+          decoration: InputDecoration(
+              counterText: '',
+              border: InputBorder.none,
+              helperText: widget.helperText),
         ),
       ),
     ));

@@ -96,6 +96,7 @@ class RootDataModel extends ChangeNotifier {
         userData.switchRoute(3);
       }
     } else if (option == 2) {
+      //FIXME 为什么seekHelp和lendHand可以是同一个人2023-12-21
       list2!.add(seekHelpModel.singleSeekHelp.uploadTime.split(' ')[0]);
       list2.add(userData.userId);
       flag = await lendHandModel.lendAHand(list2, list);

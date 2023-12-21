@@ -46,6 +46,9 @@ class _TopBarState extends State<_TopBar> {
       codeLines = showInfo.codeContent.length;
       codeText = showInfo.codeContent.join('\n');
     } else {
+      if (showInfo.rowCodes.isEmpty) {
+        codeText = 'The modified file is the same as the original file';
+      }
       for (int i = 0; i < showInfo.rowCodes.length; i++) {
         if (showInfo.rowCodes[i].status == 1) {
           continue;
@@ -83,6 +86,7 @@ class _TopBarState extends State<_TopBar> {
                     const SizedBox(width: 20),
                     Switch(
                         value: showInfo.codeShowStatus == 1,
+                        activeColor: Colors.black45,
                         onChanged: (value) async {
                           await context
                               .read<RootDataModel>()

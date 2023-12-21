@@ -99,17 +99,20 @@ class ShowInfo {
   }
 
   void parseRawCodeContent() {
-    //FIXME 是不是有界面的渲染正需要这些数据，所以不可以删除(给需要数据的地方拷贝一份过去)
+    //FIXME 暂时代码的组件是不是报错的原因：是不是有界面的渲染正需要这些数据，所以不可以删除(给需要数据的地方拷贝一份过去)
     rowCodes.clear();
-    for (int i = 0, originIndex = 0, copyIndex = 0;
-        i < codeContent.sublist(3).length;
+    //spj 可能会出现原代码和修改代码一样的情况，此时的diff.txt是一个空文件,应该特殊处理
+    for (int i = 3, originIndex = 0, copyIndex = 0;
+        i < codeContent.length;
         i++) {
-      if (i != 0) {
-        originIndex = rowCodes[i - 1].originIndex;
-        copyIndex = rowCodes[i - 1].copyIndex;
+      //正常来说第一个条件是肯定满足的，这里只是为了以防万一
+      if (codeContent[i].isNotEmpty && codeContent[i][0] == r'\') {
+        continue;
       }
-      rowCodes.add(SingleRowCodeInfo.fromString(
-          originIndex, copyIndex, codeContent[i + 3]));
+      rowCodes.add(
+          SingleRowCodeInfo.fromString(originIndex, copyIndex, codeContent[i]));
+      originIndex = rowCodes.last.originIndex;
+      copyIndex = rowCodes.last.copyIndex;
     }
   }
 

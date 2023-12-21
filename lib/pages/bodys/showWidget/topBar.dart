@@ -140,6 +140,8 @@ class _LikeAndCommentState extends State<_LikeAndComment> {
                                       return;
                                     }
                                     //不能自己给自己点赞
+                                    //FIXME 为什么seekHelp和lendHand可以是同一个人2023-12-21，
+                                    //可能的原因是下面的方法是异步的？没有等他执行完就执行下面的代码了？(个人感觉不是)
                                     if (!context
                                         .read<RootDataModel>()
                                         .syncUserOperate(2)) {
