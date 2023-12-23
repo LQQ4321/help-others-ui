@@ -57,12 +57,36 @@ class ConstantData {
     Color(0xfff6f8fa)
   ];
 
+  static const List<String> loginOptionTopics = [
+    'Username',
+    'Mailbox',
+    'Auth code'
+  ];
+
+  static const List<IconData> loginOptionIcons = [
+    Icons.person_outline,
+    Icons.mail_lock_outlined,
+    Icons.verified_user_outlined
+  ];
+
   static const List<IconData> showRouteTopBarIcons = [
     Icons.copy,
     Icons.image,
     Icons.topic,
     Icons.favorite,
     Icons.message
+  ];
+
+  static const List<String> loginPromptMessage = [
+    'The network is faulty or the server is abnormal',
+    'Verification code expired',
+    'Verification code error',
+    'Password error',
+    'The email address does not exist',
+    'The username does not exist',
+    'The input text cannot be empty',
+    'The input text cannot contain Spaces',
+    'The entered email address format is invalid'
   ];
 
   static const List<List<String>> seekAHelpPromptMessage = [

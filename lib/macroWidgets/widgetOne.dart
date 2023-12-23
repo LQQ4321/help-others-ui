@@ -283,14 +283,19 @@ class _RectangleInputState extends State<RectangleInput> {
               ),
             )),
             widget.eye
-                ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
-                    splashRadius: 20,
-                    icon: const Icon(Icons.remove_red_eye))
+                ? ClipOval(
+                    child: Center(
+                        child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                                child: const Icon(Icons.remove_red_eye,
+                                    size: 20, color: Colors.black38)))))
                 : Container()
           ],
         ),

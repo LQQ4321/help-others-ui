@@ -55,24 +55,34 @@ class UserData {
     });
   }
 
-  // 0 登录成功 1 输入格式错误(包含一个空格或为空) 2 用户名不存在或密码错误
-  Future<int> login(String name, String password) async {
-    if (name.isEmpty ||
-        password.isEmpty ||
-        name.contains(' ') ||
-        password.contains(' ')) {
-      return 1;
+  // 0 登录成功 1 内部错误 2 验证码过期 3 验证码或密码错误 4 邮箱地址或者用户名不存在
+  // 5 输入内容不能为空 6 输入内容不能包含空格 7 邮箱格式不正确
+  Future<int> login(
+      int loginModel, String userIdentity, String password) async {
+    if (userIdentity.isEmpty || password.isEmpty) {
+      return 5;
     }
-
+    if (userIdentity.contains(' ') || password.contains(' ')) {
+      return 6;
+    }
+    //TODO 如果时用邮箱登录，检测一下邮箱的格式
     Map request = {
-      'requestType': 'verifyUser',
-      'info': ['login', name, password]
+      'requestType': 'login',
+      'info': [
+        loginModel == 0
+            ? 'username'
+            : (loginModel < 3 ? 'mailbox' : 'authcode'),
+        userIdentity,
+        password
+      ]
     };
     int flag =
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       if (value.data[Config.status] != Config.succeedStatus) {
-        return 2;
+        int errorCode = value.data['errorCode'];
+        return errorCode;
       }
+
       List<dynamic> configData = value.data['configData'];
       List<dynamic> tempUnsolvedList = value.data['unsolvedList'];
       fromJson(value.data['user'], configData, tempUnsolvedList);
@@ -80,7 +90,7 @@ class UserData {
       return 0;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
-      return 2;
+      return 1;
     });
     if (flag == 0) {
       // TODO 测试 管理员和用户的区别
