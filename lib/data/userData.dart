@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:help_them/data/config.dart';
 import 'package:flutter/material.dart';
 import 'package:help_them/data/seekHelp.dart';
+import 'package:help_them/functions/functionOne.dart';
 import 'dart:html' as html;
 import 'package:intl/intl.dart';
 
 class UserData {
+  int loginRouteId = 0;
   bool isLogin = false;
   bool rememberMe = false;
   late String userId;
@@ -55,6 +57,112 @@ class UserData {
     });
   }
 
+  Future<int> forgotPassword(List<String> list) async {
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].isEmpty) {
+        return 5;
+      }
+    }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].contains(' ')) {
+        return 6;
+      }
+    }
+    if (list[1] != list[2]) {
+      return 7;
+    }
+    list.removeAt(2);
+    Map request = {'requestType': 'forgotPassword', 'info': list};
+    int flag =
+        await Config.dio.post(Config.requestJson, data: request).then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        int errorCode = value.data['errorCode'];
+        if (errorCode == 2) {
+          errorCode = 8;
+        } else if (errorCode == 3) {
+          errorCode = 9;
+        } else if (errorCode == 4) {
+          errorCode = 3;
+        }
+        return errorCode;
+      }
+      loginRouteId = 0;
+      return 0;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return 1;
+    });
+    return flag;
+  }
+
+  Future<int> register(List<String> list) async {
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].isEmpty) {
+        return 5;
+      }
+    }
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].contains(' ')) {
+        return 6;
+      }
+    }
+    if (list[2] != list[3]) {
+      return 7;
+    }
+    list.removeAt(2);
+    Map request = {'requestType': 'register', 'info': list};
+    int flag =
+        await Config.dio.post(Config.requestJson, data: request).then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        int errorCode = value.data['errorCode'];
+        if (errorCode == 2) {
+          errorCode = 8;
+        } else if (errorCode == 3) {
+          errorCode = 9;
+        } else if (errorCode == 4) {
+          errorCode = 10;
+        }
+        return errorCode;
+      }
+      loginRouteId = 0;
+      return 0;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return 1;
+    });
+    return flag;
+  }
+
+  // 0 发送验证码成功 1 网络或服务器内部错误 2 邮箱已存在(想对于注册) 3 邮箱不存在(相对于忘记密码)
+  // 4 邮箱地址格式不正确 5 邮箱地址为空 6 邮箱地址包含空格
+  Future<int> sendVerificationCode(bool isRegister, String mailbox) async {
+    if (mailbox.isEmpty) {
+      return 5;
+    }
+    if (mailbox.contains(' ')) {
+      return 6;
+    }
+    if (!FunctionOne.isEmailValid(mailbox)) {
+      return 4;
+    }
+    Map request = {
+      'requestType': 'sendVerificationCode',
+      'info': [isRegister ? 'register' : 'forgotPassword', mailbox]
+    };
+    int flag =
+        await Config.dio.post(Config.requestJson, data: request).then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        int errorCode = value.data['errorCode'];
+        return errorCode;
+      }
+      return 0;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return 1;
+    });
+    return flag;
+  }
+
   // 0 登录成功 1 内部错误 2 验证码过期 3 验证码或密码错误 4 邮箱地址或者用户名不存在
   // 5 输入内容不能为空 6 输入内容不能包含空格 7 邮箱格式不正确
   Future<int> login(
@@ -80,6 +188,13 @@ class UserData {
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       if (value.data[Config.status] != Config.succeedStatus) {
         int errorCode = value.data['errorCode'];
+        if(errorCode == 2) {
+          errorCode = 8;
+        }else if(errorCode == 3){
+          errorCode = 9;
+        }else if(errorCode == 4){
+          errorCode = 11;
+        }
         return errorCode;
       }
 
@@ -110,6 +225,10 @@ class UserData {
 
   void changeRememberMe() {
     rememberMe = !rememberMe;
+  }
+
+  void switchLoginRoute(int pageId) {
+    loginRouteId = pageId;
   }
 
   SingleSeekHelp? getRandomSeekHelpId() {

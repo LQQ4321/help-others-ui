@@ -156,7 +156,7 @@ class RootDataModel extends ChangeNotifier {
       {List<String>? strList, List<int>? numList}) async {
     dynamic flag;
     if (option == 1) {
-      flag = await userData.login(strList![0], strList[1]);
+      flag = await userData.login(numList![0],strList![0], strList[1]);
     } else if (option == 2) {
       userData.switchRoute(numList![0]);
     } else if (option == 3) {
@@ -188,6 +188,14 @@ class RootDataModel extends ChangeNotifier {
           lendHandModel.showLendHandList[showInfo.curRightShowPage].status = 1;
         }
       }
+    } else if (option == 6) {
+      flag = await userData.sendVerificationCode(numList![0] == 0, strList![0]);
+    } else if (option == 7) {
+      userData.switchLoginRoute(numList![0]);
+    } else if (option == 8) {
+      flag = await userData.register(strList!);
+    } else if (option == 9) {
+      flag = await userData.forgotPassword(strList!);
     }
     notifyListeners();
     return flag;
@@ -233,7 +241,7 @@ class RootDataModel extends ChangeNotifier {
     bool flag = false;
     if (userData.pageId != 0) {
       //调用login后,userData.pageId已经变成 1 了
-      flag = (await userData.login(userData.name, userData.password)) == 0;
+      flag = (await userData.login(0, userData.name, userData.password)) == 0;
     }
     //前一步执行正确才有必要执行下一步，相当于stream,所以这一个初始化过程中的网络请求是串行化的,可能有点慢
     if (flag) {

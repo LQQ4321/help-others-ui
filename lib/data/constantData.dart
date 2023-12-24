@@ -77,6 +77,28 @@ class ConstantData {
     Icons.message
   ];
 
+  static const List<String> errorTitle = [
+    'Internal error',
+    'Send code fail',
+    'Logical error',
+    'Operate fail',
+
+  ];
+
+  static const List<String> errorMessage = [
+    'The network is disconnected or the back-end is faulty.',
+    'Mailbox already exist',
+    'Mailbox does not exist',
+    'Mailbox format incorrect',
+    'The presence input field is empty',
+    'Content of the presence input field contain spaces',
+'The two passwords are different',
+    'The verification code has expired',
+    'verification code error',
+    'The user name or password already exists',
+    'The user name or password not exists',
+  ];
+
   static const List<String> loginPromptMessage = [
     'The network is faulty or the server is abnormal',
     'Verification code expired',
@@ -86,7 +108,7 @@ class ConstantData {
     'The username does not exist',
     'The input text cannot be empty',
     'The input text cannot contain Spaces',
-    'The entered email address format is invalid'
+    'The entered email address format is invalid',
   ];
 
   static const List<List<String>> seekAHelpPromptMessage = [

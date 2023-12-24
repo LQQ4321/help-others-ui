@@ -7,6 +7,14 @@ class FunctionOne {
   // static bool judgeBan(int option,int ban,{int userBan = 0}) {
   //
   // }
+
+  static bool isEmailValid(String email) {
+    // 正则表达式模式用于匹配合法的邮箱地址格式
+    const pattern = r'^[\w-]+(\.[\w-]+)*@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$';
+    final regex = RegExp(pattern);
+    return regex.hasMatch(email);
+  }
+
   // 0 default 1 green 2 red
   static Map<String, TextStyle> getCodeTextStyle({int option = 0}) {
     //这里也是引用

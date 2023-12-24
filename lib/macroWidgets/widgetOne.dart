@@ -283,19 +283,21 @@ class _RectangleInputState extends State<RectangleInput> {
               ),
             )),
             widget.eye
-                ? ClipOval(
-                    child: Center(
-                        child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                                child: const Icon(Icons.remove_red_eye,
-                                    size: 20, color: Colors.black38)))))
+                ? ClipOval(child: Center(
+                    child: LayoutBuilder(builder: (context, constraints) {
+                    return SizedBox(
+                        width: constraints.maxHeight,
+                        height: constraints.maxHeight,
+                        child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                            child: Icon(Icons.remove_red_eye,
+                                size: constraints.maxHeight / 2,
+                                color: Colors.black38)));
+                  })))
                 : Container()
           ],
         ),
