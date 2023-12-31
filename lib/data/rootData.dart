@@ -156,9 +156,20 @@ class RootDataModel extends ChangeNotifier {
       {List<String>? strList, List<int>? numList}) async {
     dynamic flag;
     if (option == 1) {
-      flag = await userData.login(numList![0],strList![0], strList[1]);
+      flag = await userData.login(numList![0], strList![0], strList[1]);
+      if (flag == 0) {
+        flag = (await seekHelpModel.requestSeekHelpList()) ? 0 : 12;
+      }
     } else if (option == 2) {
-      userData.switchRoute(numList![0]);
+      if (numList![0] == 5) {
+        flag = await userData.contributions.getContributions(userData.userId,
+            registerTime: userData.registerTime);
+        if (flag) {
+          userData.switchRoute(numList[0]);
+        }
+      } else {
+        userData.switchRoute(numList[0]);
+      }
     } else if (option == 3) {
       userData.changeRememberMe();
     } else if (option == 4) {
@@ -196,6 +207,8 @@ class RootDataModel extends ChangeNotifier {
       flag = await userData.register(strList!);
     } else if (option == 9) {
       flag = await userData.forgotPassword(strList!);
+    } else if (option == 10) {
+      userData.contributions.parseContributions(numList![0]);
     }
     notifyListeners();
     return flag;
@@ -232,7 +245,8 @@ class RootDataModel extends ChangeNotifier {
     return flag;
   }
 
-  //注意该方法只执行一遍，
+  //注意该方法只执行一遍
+  //如果执行失败，应该提醒一下用户
   Future initWebsite() async {
     userData.init();
     // 请求当前路由所需要的数据

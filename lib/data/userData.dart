@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:help_them/data/config.dart';
 import 'package:flutter/material.dart';
+import 'package:help_them/data/macroUserData.dart';
 import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/functions/functionOne.dart';
 import 'dart:html' as html;
@@ -14,9 +15,11 @@ class UserData {
   late String userId;
   String name = '';
   String password = '';
+  late String registerTime;
   late bool isManager; //是否是管理员
-  List<String> seekHelpList = [];
-  List<String> lendHandList = [];
+  // List<String> seekHelpList = [];
+  // List<String> lendHandList = [];
+  Contributions contributions = Contributions();
   List<String> seekHelpLikeList = [];
   List<String> lendHandLikeList = [];
 
@@ -110,6 +113,7 @@ class UserData {
       return 7;
     }
     list.removeAt(2);
+    list.add(DateFormat('yyyy-MM-dd').format(DateTime.now()));
     Map request = {'requestType': 'register', 'info': list};
     int flag =
         await Config.dio.post(Config.requestJson, data: request).then((value) {
@@ -153,6 +157,9 @@ class UserData {
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       if (value.data[Config.status] != Config.succeedStatus) {
         int errorCode = value.data['errorCode'];
+        if (errorCode == 4) {
+          errorCode = 13;
+        }
         return errorCode;
       }
       return 0;
@@ -188,11 +195,11 @@ class UserData {
         await Config.dio.post(Config.requestJson, data: request).then((value) {
       if (value.data[Config.status] != Config.succeedStatus) {
         int errorCode = value.data['errorCode'];
-        if(errorCode == 2) {
+        if (errorCode == 2) {
           errorCode = 8;
-        }else if(errorCode == 3){
+        } else if (errorCode == 3) {
           errorCode = 9;
-        }else if(errorCode == 4){
+        } else if (errorCode == 4) {
           errorCode = 11;
         }
         return errorCode;
@@ -287,9 +294,12 @@ class UserData {
     name = userData['Name'];
     password = userData['Password'];
     isManager = userData['IsManager'];
+    //FIXME
+    // registerTime = userData['RegisterTime'];
+    registerTime = '2020-10-10';
     //这里的数据是空字符串，所以没有报错，但如果是null，会报错
-    seekHelpList = userData['SeekHelp'].toString().split('#');
-    lendHandList = userData['LendHand'].toString().split('#');
+    // seekHelpList = userData['SeekHelp'].toString().split('#');
+    // lendHandList = userData['LendHand'].toString().split('#');
     seekHelpLikeList = userData['SeekHelpLikeList'].toString().split('#');
     lendHandLikeList = userData['LendHandLikeList'].toString().split('#');
     unsolvedSeekHelpList = List.generate(tempUnsolvedList.length, (index) {
@@ -305,6 +315,6 @@ class UserData {
 
   @override
   String toString() {
-    return '$userId $name $isManager $seekHelpList $score $remainingRecourse $loginTime';
+    return '$userId $name $isManager $score $remainingRecourse $loginTime';
   }
 }

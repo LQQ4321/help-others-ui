@@ -120,8 +120,56 @@ class _LeftBarState extends State<_LeftBar> {
                                         showInfo.curRightShowPage == index
                                             ? Colors.grey[200]!
                                             : Colors.white)),
-                            child: Text('${index + 1}',
-                                style: const TextStyle(color: Colors.grey)));
+                            child: Row(
+                              children: [
+                                ClipOval(
+                                  child: Container(
+                                      width: 40,
+                                      height: 40,
+                                      color: lendHandModel
+                                                  .showLendHandList[index]
+                                                  .status !=
+                                              0
+                                          ? Colors.green[100]
+                                          : Colors.orange[100],
+                                      child: Center(
+                                        child: Text('${index + 1}',
+                                            style: const TextStyle(
+                                                color: Colors.grey)),
+                                      )),
+                                ),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                    child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: List.generate(3, (columnIndex) {
+                                        if (columnIndex == 1) {
+                                          return const SizedBox(height: 5);
+                                        }
+                                        return Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            columnIndex == 0
+                                                ? 'Like : ${lendHandModel.showLendHandList[index].like}'
+                                                : lendHandModel
+                                                    .showLendHandList[index]
+                                                    .uploadTime,
+                                            style: TextStyle(
+                                                color: Colors.black26,
+                                                fontSize:
+                                                    columnIndex == 0 ? 14 : 12,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                  ),
+                                ))
+                              ],
+                            ));
                       })),
           Container(height: 1, color: Colors.black12),
           const SizedBox(height: 10),

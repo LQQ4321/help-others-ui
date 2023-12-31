@@ -5,6 +5,7 @@ import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/seekAHelp.dart';
 import 'package:help_them/pages/bodys/seekHelpList.dart';
 import 'package:help_them/pages/bodys/showRoute.dart';
+import 'package:help_them/pages/users/user.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
@@ -31,6 +32,8 @@ class Home extends StatelessWidget {
                 return const ShowRoute();
               } else if (pageId == 4) {
                 return const SeekAHelp(isSeekHelp: false);
+              } else if (pageId == 5) {
+                return const User();
               }
               return Container();
             },
@@ -134,7 +137,11 @@ class _TopBar extends StatelessWidget {
                     icon: const Icon(Icons.handshake_outlined)),
                 const SizedBox(width: 10),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await context
+                          .read<RootDataModel>()
+                          .userOperate(2, numList: [5]);
+                    },
                     splashRadius: 20,
                     icon: const Icon(Icons.person_outline)),
                 const SizedBox(width: 10),

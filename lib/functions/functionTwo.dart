@@ -13,6 +13,7 @@ enum ErrorType {
   verificationCodeError,
   usernameOrEmailAlreadyExists,
   usernameOrEmailNotExists,
+  dataRequestFailure,
 }
 
 Map<int, ErrorType> errorMap = {
@@ -26,8 +27,8 @@ Map<int, ErrorType> errorMap = {
   8: ErrorType.verificationCodeExpired,
   9: ErrorType.verificationCodeError,
   10: ErrorType.usernameOrEmailAlreadyExists,
-  11:ErrorType.usernameOrEmailNotExists,
-
+  11: ErrorType.usernameOrEmailNotExists,
+  12: ErrorType.dataRequestFailure,
 };
 
 class ErrorParse {
@@ -46,15 +47,19 @@ class ErrorParse {
       case 6:
         return [ConstantData.errorTitle[1], ConstantData.errorMessage[5]];
       case 7:
-        return [ConstantData.errorTitle[2],ConstantData.errorMessage[6]];
+        return [ConstantData.errorTitle[2], ConstantData.errorMessage[6]];
       case 8:
-        return [ConstantData.errorTitle[3],ConstantData.errorMessage[7]];
+        return [ConstantData.errorTitle[3], ConstantData.errorMessage[7]];
       case 9:
-        return [ConstantData.errorTitle[3],ConstantData.errorMessage[8]];
+        return [ConstantData.errorTitle[3], ConstantData.errorMessage[8]];
       case 10:
-        return [ConstantData.errorTitle[3],ConstantData.errorMessage[9]];
+        return [ConstantData.errorTitle[3], ConstantData.errorMessage[9]];
       case 11:
-        return [ConstantData.errorTitle[3],ConstantData.errorMessage[10]];
+        return [ConstantData.errorTitle[3], ConstantData.errorMessage[10]];
+      case 12:
+        return [ConstantData.errorTitle[4], ConstantData.errorMessage[0]];
+      case 13:
+        return [ConstantData.errorTitle[1], ConstantData.errorMessage[11]];
     }
     return ['Parse fail', 'Error type not exists and cannot get error message'];
   }

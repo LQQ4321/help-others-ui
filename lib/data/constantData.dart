@@ -2,40 +2,50 @@ import 'package:flutter/material.dart';
 
 class ConstantData {
   static Map<String, TextStyle> githubTheme = {
-    'root':
-        TextStyle(color: Color(0xff333333), backgroundColor: Color(0xffffffff)),
-    'comment': TextStyle(color: Color(0xff999988), fontStyle: FontStyle.italic),
-    'quote': TextStyle(color: Color(0xff999988), fontStyle: FontStyle.italic),
-    'keyword': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.bold),
+    'root': const TextStyle(
+        color: Color(0xff333333), backgroundColor: Color(0xffffffff)),
+    'comment':
+        const TextStyle(color: Color(0xff999988), fontStyle: FontStyle.italic),
+    'quote':
+        const TextStyle(color: Color(0xff999988), fontStyle: FontStyle.italic),
+    'keyword':
+        const TextStyle(color: Color(0xff333333), fontWeight: FontWeight.bold),
     'selector-tag':
-        TextStyle(color: Color(0xff333333), fontWeight: FontWeight.bold),
-    'subst': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
-    'number': TextStyle(color: Color(0xff008080)),
-    'literal': TextStyle(color: Color(0xff008080)),
-    'variable': TextStyle(color: Color(0xff008080)),
-    'template-variable': TextStyle(color: Color(0xff008080)),
-    'string': TextStyle(color: Color(0xffdd1144)),
-    'doctag': TextStyle(color: Color(0xffdd1144)),
-    'title': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
-    'section': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
+        const TextStyle(color: Color(0xff333333), fontWeight: FontWeight.bold),
+    'subst': const TextStyle(
+        color: Color(0xff333333), fontWeight: FontWeight.normal),
+    'number': const TextStyle(color: Color(0xff008080)),
+    'literal': const TextStyle(color: Color(0xff008080)),
+    'variable': const TextStyle(color: Color(0xff008080)),
+    'template-variable': const TextStyle(color: Color(0xff008080)),
+    'string': const TextStyle(color: Color(0xffdd1144)),
+    'doctag': const TextStyle(color: Color(0xffdd1144)),
+    'title':
+        const TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
+    'section':
+        const TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
     'selector-id':
-        TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
-    'type': TextStyle(color: Color(0xff445588), fontWeight: FontWeight.bold),
-    'tag': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
-    'name': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
-    'attribute':
-        TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
-    'regexp': TextStyle(color: Color(0xff009926)),
-    'link': TextStyle(color: Color(0xff009926)),
-    'symbol': TextStyle(color: Color(0xff990073)),
-    'bullet': TextStyle(color: Color(0xff990073)),
-    'built_in': TextStyle(color: Color(0xff0086b3)),
-    'builtin-name': TextStyle(color: Color(0xff0086b3)),
-    'meta': TextStyle(color: Color(0xff999999), fontWeight: FontWeight.bold),
-    'deletion': TextStyle(backgroundColor: Color(0xffffdddd)),
-    'addition': TextStyle(backgroundColor: Color(0xffddffdd)),
-    'emphasis': TextStyle(fontStyle: FontStyle.italic),
-    'strong': TextStyle(fontWeight: FontWeight.bold),
+        const TextStyle(color: Color(0xff990000), fontWeight: FontWeight.bold),
+    'type':
+        const TextStyle(color: Color(0xff445588), fontWeight: FontWeight.bold),
+    'tag': const TextStyle(
+        color: Color(0xff000080), fontWeight: FontWeight.normal),
+    'name': const TextStyle(
+        color: Color(0xff000080), fontWeight: FontWeight.normal),
+    'attribute': const TextStyle(
+        color: Color(0xff000080), fontWeight: FontWeight.normal),
+    'regexp': const TextStyle(color: Color(0xff009926)),
+    'link': const TextStyle(color: Color(0xff009926)),
+    'symbol': const TextStyle(color: Color(0xff990073)),
+    'bullet': const TextStyle(color: Color(0xff990073)),
+    'built_in': const TextStyle(color: Color(0xff0086b3)),
+    'builtin-name': const TextStyle(color: Color(0xff0086b3)),
+    'meta':
+        const TextStyle(color: Color(0xff999999), fontWeight: FontWeight.bold),
+    'deletion': const TextStyle(backgroundColor: Color(0xffffdddd)),
+    'addition': const TextStyle(backgroundColor: Color(0xffddffdd)),
+    'emphasis': const TextStyle(fontStyle: FontStyle.italic),
+    'strong': const TextStyle(fontWeight: FontWeight.bold),
   };
 
   static const List<TextStyle> textStyle = [
@@ -82,7 +92,7 @@ class ConstantData {
     'Send code fail',
     'Logical error',
     'Operate fail',
-
+    'Request fail',
   ];
 
   static const List<String> errorMessage = [
@@ -92,23 +102,12 @@ class ConstantData {
     'Mailbox format incorrect',
     'The presence input field is empty',
     'Content of the presence input field contain spaces',
-'The two passwords are different',
+    'The two passwords are different',
     'The verification code has expired',
     'verification code error',
     'The user name or password already exists',
     'The user name or password not exists',
-  ];
-
-  static const List<String> loginPromptMessage = [
-    'The network is faulty or the server is abnormal',
-    'Verification code expired',
-    'Verification code error',
-    'Password error',
-    'The email address does not exist',
-    'The username does not exist',
-    'The input text cannot be empty',
-    'The input text cannot contain Spaces',
-    'The entered email address format is invalid',
+    'Send too often, please wait 10 minutes'
   ];
 
   static const List<List<String>> seekAHelpPromptMessage = [
@@ -131,7 +130,6 @@ class ConstantData {
     ['Money reward error', 'The money reward is beyond your reach.'],
     ['Money reward error', 'The money reward is not an integer.']
   ];
-
   static const List<List<String>> seekHelpOptionList = [
     ['All', 'Unsolved', 'Resolved'],
     ['High score', 'Low score'],
@@ -145,6 +143,40 @@ class ConstantData {
   static const List<String> supportedLanguages = ['C', 'C++', 'Golang'];
   static const List<String> supportedLanguageFiles = ['c', 'cpp', 'go'];
   static const List<String> supportedPictureFiles = ['png', 'jpg', 'jpeg'];
+
+  static const List<String> monthName = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
+  static const List<String> dayOfWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+
+  //contribution colors
+  static const List<Color> contributionColors = [
+    Color(0xffebedf0),
+    Color(0xff9be9a8),
+    Color(0xff40c463),
+    Color(0xff2f9a4b),
+    Color(0xff216e39)
+  ];
 
   // 信息框内的颜色
   static List<Color> statusColors = [
