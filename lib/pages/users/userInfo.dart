@@ -31,8 +31,7 @@ class _UserBasicInfoState extends State<_UserBasicInfo> {
   @override
   Widget build(BuildContext context) {
     UserData userData = context.watch<RootDataModel>().userData;
-    Contributions contributions =
-        context.watch<RootDataModel>().userData.contributions;
+    Contributions contributions = context.watch<RootDataModel>().contributions;
     String _parseUserInfo(int option) {
       if (option == 0) {
         return userData.name;
@@ -112,8 +111,7 @@ class _ContributionsState extends State<_Contributions> {
 
   @override
   Widget build(BuildContext context) {
-    Contributions contributions =
-        context.watch<RootDataModel>().userData.contributions;
+    Contributions contributions = context.watch<RootDataModel>().contributions;
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -142,7 +140,7 @@ class _ContributionsState extends State<_Contributions> {
                           onPressed: () async {
                             await context
                                 .read<RootDataModel>()
-                                .userOperate(10, numList: [index]);
+                                .contributionOperate(1, numList: [index]);
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateColor.resolveWith(
@@ -232,8 +230,7 @@ class _ContributionCells extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Contributions contributions =
-        context.watch<RootDataModel>().userData.contributions;
+    Contributions contributions = context.watch<RootDataModel>().contributions;
     return Column(
       children: [
         Container(
@@ -289,11 +286,14 @@ class _ContributionCells extends StatelessWidget {
                                     border: Border.all(
                                         color: const Color(0xffdfe1e4)),
                                     color: statusOfDay.lendHand +
-                                                statusOfDay.seekHelp >=
+                                                statusOfDay.seekHelp +
+                                                1 >=
                                             ConstantData
                                                 .contributionColors.length
                                         ? ConstantData.contributionColors.last
-                                        : ConstantData.contributionColors[0],
+                                        : ConstantData.contributionColors[
+                                            statusOfDay.lendHand +
+                                                statusOfDay.seekHelp],
                                     borderRadius: BorderRadius.circular(2)),
                               ),
                             ),

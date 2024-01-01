@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:help_them/data/comment.dart';
 import 'package:help_them/data/lendHand.dart';
 import 'package:help_them/data/macroLendHand.dart';
+import 'package:help_them/data/macroUserData.dart';
 import 'package:help_them/data/userData.dart';
 import 'package:help_them/data/seekHelp.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +25,7 @@ class RootDataModel extends ChangeNotifier {
   LendHandModel lendHandModel = LendHandModel();
   ShowInfo showInfo = ShowInfo();
   CommentModel commentModel = CommentModel();
+  Contributions contributions = Contributions();
 
   //Comment
   Future<dynamic> commentOperate(int option, {String text = ''}) async {
@@ -162,8 +164,8 @@ class RootDataModel extends ChangeNotifier {
       }
     } else if (option == 2) {
       if (numList![0] == 5) {
-        flag = await userData.contributions
-            .getContributions(userData.userId, userData.registerTime);
+        flag = await contributions.getContributions(
+            userData.userId, userData.registerTime);
         if (flag) {
           userData.switchRoute(numList[0]);
         }
@@ -207,8 +209,17 @@ class RootDataModel extends ChangeNotifier {
       flag = await userData.register(strList!);
     } else if (option == 9) {
       flag = await userData.forgotPassword(strList!);
-    } else if (option == 10) {
-      userData.contributions.parseContributions(numList![0]);
+    }
+    notifyListeners();
+    return flag;
+  }
+
+  Future<dynamic> contributionOperate(int option, {List<int>? numList}) async {
+    dynamic flag;
+    if (option == 1) {
+      contributions.parseContributions(numList![0]);
+    } else if (option == 2) {
+      contributions.setSeekHelpFilterRule(numList![0], numList[1]);
     }
     notifyListeners();
     return flag;

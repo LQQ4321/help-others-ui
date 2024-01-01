@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:help_them/data/config.dart';
 import 'package:flutter/material.dart';
-import 'package:help_them/data/macroUserData.dart';
 import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/functions/functionOne.dart';
 import 'dart:html' as html;
@@ -18,9 +17,6 @@ class UserData {
   String password = '';
   late String registerTime;
   late bool isManager; //是否是管理员
-  // List<String> seekHelpList = [];
-  // List<String> lendHandList = [];
-  Contributions contributions = Contributions();
   List<String> seekHelpLikeList = [];
   List<String> lendHandLikeList = [];
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/pages/users/submitList.dart';
 import 'package:help_them/pages/users/userInfo.dart';
 
 class User extends StatefulWidget {
@@ -67,7 +68,9 @@ class _UserState extends State<User> {
           ),
         ),
         const SizedBox(width: 20),
-        Expanded(child: _leftButtonId == 0 ? const UserInfo() : Container())
+        Expanded(
+            child:
+                _leftButtonId == 0 ? const UserInfo() : const UserSubmitList())
       ],
     );
   }

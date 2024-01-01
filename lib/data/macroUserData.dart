@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/data/constantData.dart';
+import 'package:help_them/functions/functionOne.dart';
 import 'package:intl/intl.dart' as intl;
 
 class UserSeekHelp {
@@ -63,6 +66,85 @@ class Contributions {
   List<StatusOfDay> contributionTable = [];
   List<UserSeekHelp> seekHelpList = [];
   List<UserLendHand> lendHandList = [];
+
+  //不弄展示列表了，等到需要的时候再生成，不需要的时候就销毁
+  //seek help
+  int seekHelpFilterStatus = 0;
+  int seekHelpFilterLanguage = 0;
+  bool seekHelpFilterScore = false;
+  bool seekHelpFilterLike = false;
+  bool seekHelpFilterDate = false;
+  int seekHelpMainFilter = 1; //1 score 2 like 3 date
+
+  //lend hand
+  int lendHandFilterStatus = 0;
+  bool lendHandFilterLike = false;
+  bool lendHandFilterDate = false;
+
+  bool seekHelpIsHigh(int option) {
+    if (option == 1) {
+      return seekHelpFilterScore;
+    } else if (option == 2) {
+      return seekHelpFilterLike;
+    }
+    return seekHelpFilterDate;
+  }
+
+  void setSeekHelpFilterRule(int option, int value) {
+    if (option == 0) {
+      seekHelpFilterStatus = value;
+    } else if (option == 1) {
+      seekHelpMainFilter = 1;
+      seekHelpFilterScore = !seekHelpFilterScore;
+    } else if (option == 2) {
+      seekHelpMainFilter = 2;
+      seekHelpFilterLike = !seekHelpFilterLike;
+    } else if (option == 3) {
+      seekHelpMainFilter = 3;
+      seekHelpFilterDate = !seekHelpFilterDate;
+    }
+    seekHelpFilterLanguage = value;
+  }
+
+  List<UserSeekHelp> seekHelpFilter() {
+    List<UserSeekHelp> tempList = [];
+    for (int i = 0; i < seekHelpList.length; i++) {
+      if (seekHelpFilterStatus != 0 &&
+          seekHelpList[i].status + 1 != seekHelpFilterStatus) {
+        continue;
+      }
+      //FIXME 是语言的问题导致状态筛选出现问题的
+      if (seekHelpFilterLanguage != 0 &&
+          seekHelpList[i].language !=
+              FunctionOne.switchLanguage(seekHelpFilterLanguage)) {
+        continue;
+      }
+      tempList.add(seekHelpList[i]);
+    }
+    if (seekHelpMainFilter == 1) {
+      tempList
+          .sort((a, b) => (a.score - b.score) * (seekHelpFilterScore ? -1 : 1));
+    } else if (seekHelpMainFilter == 2) {
+      tempList
+          .sort((a, b) => (a.like - b.like) * (seekHelpFilterLike ? -1 : 1));
+    } else {
+      tempList.sort((a, b) =>
+          (DateTime.parse(a.uploadTime)
+                  .difference(DateTime.parse(b.uploadTime)))
+              .inSeconds *
+          (seekHelpFilterDate ? -1 : 1));
+    }
+    return tempList;
+  }
+
+  void setLendHandFilterRule(int option, int value) {
+    if (option == 0) {
+      lendHandFilterStatus = value;
+    } else if (option == 1) {
+      lendHandFilterLike = (value == 1);
+    }
+    lendHandFilterDate = (value == 1);
+  }
 
   //这个函数应该只调用一次
   Future<bool> getContributions(String userId, String registerTime) async {
@@ -182,6 +264,18 @@ class Contributions {
     tempList = data['lendHandList'];
     lendHandList = List.generate(tempList.length, (index) {
       return UserLendHand.fromJson(tempList[index]);
+    });
+    //TODO 因为没有数据，这里随机生成一点数据
+    seekHelpList = List.generate(20, (index) {
+      UserSeekHelp userSeekHelp = UserSeekHelp();
+      int rad = Random().nextInt(3);
+      userSeekHelp.uploadTime = '2024-01-0$rad 10:10';
+      userSeekHelp.like = rad;
+      userSeekHelp.score = rad;
+      userSeekHelp.status = index % 2;
+      userSeekHelp.language = ConstantData
+          .supportedLanguages[rad % ConstantData.supportedLanguages.length];
+      return userSeekHelp;
     });
   }
 }
