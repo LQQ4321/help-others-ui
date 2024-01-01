@@ -188,15 +188,14 @@ class _LikeAndCommentState extends State<_LikeAndComment> {
                                 ));
                           },
                         )))),
-            index < 1
-                ? const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Remark', style: TextStyle(color: Colors.black38)),
-                      SizedBox(width: 5)
-                    ],
-                  )
-                : Container()
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(index == 0 ? 'Remark' : (index == 1 ? 'Like' : 'Comment'),
+                    style: const TextStyle(color: Colors.black38)),
+                const SizedBox(width: 5)
+              ],
+            )
           ],
         );
       }),

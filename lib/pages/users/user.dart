@@ -30,7 +30,7 @@ class _UserState extends State<User> {
           padding:
               const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
           child: Column(
-            children: List.generate(5, (index) {
+            children: List.generate(3, (index) {
               if (index % 2 == 1) {
                 return const SizedBox(height: 5);
               }
@@ -55,9 +55,7 @@ class _UserState extends State<User> {
                       Icon(index == 0 ? Icons.person_outline : Icons.list,
                           color: Colors.blueGrey, weight: 0.1),
                       Text(
-                        index == 0
-                            ? 'User info'
-                            : (index == 2 ? 'Seek assist' : 'Assistance'),
+                        index == 0 ? 'User info' : 'Submit list',
                         style: const TextStyle(
                             color: Colors.black38,
                             fontSize: 14,
@@ -69,10 +67,7 @@ class _UserState extends State<User> {
           ),
         ),
         const SizedBox(width: 20),
-        Expanded(
-            child: _leftButtonId == 0
-                ? const UserInfo()
-                : (_leftButtonId == 2 ? Container() : Container()))
+        Expanded(child: _leftButtonId == 0 ? const UserInfo() : Container())
       ],
     );
   }

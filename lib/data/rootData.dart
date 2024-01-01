@@ -162,8 +162,8 @@ class RootDataModel extends ChangeNotifier {
       }
     } else if (option == 2) {
       if (numList![0] == 5) {
-        flag = await userData.contributions.getContributions(userData.userId,
-            registerTime: userData.registerTime);
+        flag = await userData.contributions
+            .getContributions(userData.userId, userData.registerTime);
         if (flag) {
           userData.switchRoute(numList[0]);
         }

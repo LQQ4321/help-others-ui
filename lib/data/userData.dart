@@ -14,6 +14,7 @@ class UserData {
   bool rememberMe = false;
   late String userId;
   String name = '';
+  String email = '';
   String password = '';
   late String registerTime;
   late bool isManager; //是否是管理员
@@ -292,6 +293,9 @@ class UserData {
     //用户信息
     userId = userData['ID'].toString();
     name = userData['Name'];
+    //FIXME
+    // email = userData['Email'];
+    email = '398928949@qq.com';
     password = userData['Password'];
     isManager = userData['IsManager'];
     //FIXME

@@ -3,6 +3,48 @@ import 'package:help_them/data/config.dart';
 import 'package:help_them/data/constantData.dart';
 import 'package:intl/intl.dart' as intl;
 
+class UserSeekHelp {
+  late String seekHelpId;
+  late String uploadTime;
+  late String language;
+  late int score;
+  late int like;
+  late int status;
+
+  UserSeekHelp();
+
+  factory UserSeekHelp.fromJson(dynamic data) {
+    UserSeekHelp userSeekHelp = UserSeekHelp();
+    userSeekHelp.seekHelpId = data['ID'].toString();
+    userSeekHelp.uploadTime = data['UploadTime'];
+    userSeekHelp.language = data['Language'];
+    userSeekHelp.score = data['Score'];
+    userSeekHelp.like = data['Like'];
+    userSeekHelp.status = data['Status'];
+    return userSeekHelp;
+  }
+}
+
+class UserLendHand {
+  late String lendHandId;
+  late String seekHelpId;
+  late String uploadTime;
+  late int like;
+  late int status;
+
+  UserLendHand();
+
+  factory UserLendHand.fromJson(dynamic data) {
+    UserLendHand userLendHand = UserLendHand();
+    userLendHand.lendHandId = data['ID'].toString();
+    userLendHand.seekHelpId = data['SeekHelpId'].toString();
+    userLendHand.uploadTime = data['UploadTime'];
+    userLendHand.like = data['Like'];
+    userLendHand.status = data['Status'];
+    return userLendHand;
+  }
+}
+
 class StatusOfDay {
   int seekHelp = 0;
   int lendHand = 0;
@@ -10,25 +52,26 @@ class StatusOfDay {
 }
 
 class Contributions {
-  bool isRequest = false;
   int curYear = 0;
-  late int registerYear;
+  int registerYear = -1;
   late int nowYear;
   late int startId;
   late int endId;
+  late int contributionsOfYear;
 
   //这里可以优化，可以等到需要的时候再初始化
-  List<StatusOfDay> contributionTable =
-      List.generate(7 * 54, (index) => StatusOfDay());
-  List<List<int>> seekHelpTimeList = [];
-  List<List<int>> lendHandTimeList = [];
+  List<StatusOfDay> contributionTable = [];
+  List<UserSeekHelp> seekHelpList = [];
+  List<UserLendHand> lendHandList = [];
 
-  Future<bool> getContributions(String userId, {String? registerTime}) async {
-    if (registerTime != null) {
+  //这个函数应该只调用一次
+  Future<bool> getContributions(String userId, String registerTime) async {
+    if (registerYear == -1) {
       registerYear = int.parse(registerTime.split('-')[0]);
       nowYear = int.parse(intl.DateFormat('yyyy').format(DateTime.now()));
-    }
-    if (isRequest) {
+      //等到需要的时候再分配
+      contributionTable = List.generate(7 * 54, (index) => StatusOfDay());
+    } else {
       return true;
     }
     Map request = {
@@ -41,7 +84,6 @@ class Contributions {
       }
       _fromJson(value.data);
       parseContributions(nowYear - registerYear);
-      isRequest = true;
       return true;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
@@ -68,6 +110,7 @@ class Contributions {
   }
 
   void parseContributions(int newYear) {
+    contributionsOfYear = 0;
     newYear += registerYear;
     if (curYear == newYear) {
       return;
@@ -101,44 +144,44 @@ class Contributions {
       contributionTable[i].lendHand = 0;
       contributionTable[i].isBlank = false;
     }
-    for (int i = 0; i < seekHelpTimeList.length; i++) {
+    for (int i = 0; i < seekHelpList.length; i++) {
+      List<String> date = seekHelpList[i].uploadTime.split(' ')[0].split('-');
+      final List<int> numDate =
+          List.generate(date.length, (index) => int.parse(date[index]));
       if (curYear.toString() !=
-          intl.DateFormat('yyyy').format(DateTime(seekHelpTimeList[i][0]))) {
+          intl.DateFormat('yyyy').format(DateTime(numDate[0]))) {
         continue;
       }
-      int offsetDay = DateTime(seekHelpTimeList[i][0], seekHelpTimeList[i][1],
-              seekHelpTimeList[i][2])
+      int offsetDay = DateTime(numDate[0], numDate[1], numDate[2])
           .difference(DateTime(curYear))
           .inDays;
       contributionTable[offsetDay + startId].seekHelp++;
+      contributionsOfYear++;
     }
-    for (int i = 0; i < lendHandTimeList.length; i++) {
+    for (int i = 0; i < lendHandList.length; i++) {
+      List<String> date = seekHelpList[i].uploadTime.split(' ')[0].split('-');
+      final List<int> numDate =
+          List.generate(date.length, (index) => int.parse(date[index]));
       if (curYear.toString() !=
-          intl.DateFormat('yyyy').format(DateTime(lendHandTimeList[i][0]))) {
+          intl.DateFormat('yyyy').format(DateTime(numDate[0]))) {
         continue;
       }
-      int offsetDay = DateTime(lendHandTimeList[i][0], lendHandTimeList[i][1],
-              lendHandTimeList[i][2])
+      int offsetDay = DateTime(numDate[0], numDate[1], numDate[2])
           .difference(DateTime(curYear))
           .inDays;
       contributionTable[offsetDay + startId].lendHand++;
+      contributionsOfYear++;
     }
   }
 
   void _fromJson(dynamic data) {
-    List<dynamic> tempList = data['seekHelpTimeList'];
-    seekHelpTimeList = List.generate(tempList.length, (index) {
-      String uploadTime = tempList[index];
-      List<String> dateList = uploadTime.split(' ')[0].split('-');
-      return List.generate(
-          dateList.length, (index) => int.parse(dateList[index]));
+    List<dynamic> tempList = data['seekHelpList'];
+    seekHelpList = List.generate(tempList.length, (index) {
+      return UserSeekHelp.fromJson(tempList[index]);
     });
-    tempList = data['lendHandTimeList'];
-    lendHandTimeList = List.generate(tempList.length, (index) {
-      String uploadTime = tempList[index];
-      List<String> dateList = uploadTime.split(' ')[0].split('-');
-      return List.generate(
-          dateList.length, (index) => int.parse(dateList[index]));
+    tempList = data['lendHandList'];
+    lendHandList = List.generate(tempList.length, (index) {
+      return UserLendHand.fromJson(tempList[index]);
     });
   }
 }

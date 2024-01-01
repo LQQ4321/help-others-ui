@@ -144,6 +144,24 @@ class ConstantData {
   static const List<String> supportedLanguageFiles = ['c', 'cpp', 'go'];
   static const List<String> supportedPictureFiles = ['png', 'jpg', 'jpeg'];
 
+  static List<IconData> userInfoIcons = [
+    Icons.person_outline,
+    Icons.email_outlined,
+    Icons.app_registration_outlined,
+    Icons.attach_money,
+    Icons.live_help_outlined,
+    Icons.handshake,
+  ];
+
+  static List<String> userInfoMean = [
+    'User name',
+    'Email',
+    'Register',
+    'Score',
+    'Seek help',
+    'Lend hand',
+  ];
+
   static const List<String> monthName = [
     'Jan',
     'Feb',

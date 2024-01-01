@@ -20,7 +20,7 @@ class Home extends StatelessWidget {
             child: Container(
           color: const Color(0xfff6f6f6),
           padding:
-              const EdgeInsets.only(right: 40, left: 40, top: 20, bottom: 20),
+              const EdgeInsets.only(right: 20, left: 20, top: 20, bottom: 20),
           child: Builder(
             builder: (BuildContext context) {
               int pageId = context.watch<RootDataModel>().userData.pageId;
