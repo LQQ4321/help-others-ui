@@ -31,6 +31,15 @@ class UserData {
   late int loginDuration; //每次最多可以登录的时间，单位是小时
   late String loginTime; //登录时间
 
+  void cleanCacheData() {
+    loginRouteId = 0;
+    isLogin = false;
+    seekHelpLikeList.clear();
+    lendHandLikeList.clear();
+    unsolvedSeekHelpList.clear();
+    switchRoute(0);
+  }
+
   bool isLike(bool isSeekHelp, String dbId) {
     if (isSeekHelp) {
       return seekHelpLikeList.contains(dbId);
@@ -254,6 +263,7 @@ class UserData {
     // 就算用户没用要求记住用户名和密码，我们也应该将其存在本地，
     // 因为定位到指定路由的时候要调用login方法，而login方法要用到
     name = html.window.localStorage['name'] ?? '';
+    email = html.window.localStorage['email'] ?? '';
     if (html.window.localStorage['password'] != null) {
       password = Config.decryptFunc(html.window.localStorage['password']!);
     }
@@ -281,6 +291,7 @@ class UserData {
     html.window.localStorage['rememberMe'] = rememberMe.toString();
     html.window.localStorage['pageId'] = '1'; //seek help
     html.window.localStorage['name'] = name;
+    html.window.localStorage['email'] = email;
     html.window.localStorage['password'] = Config.encryptFunc(password);
   }
 
@@ -289,14 +300,10 @@ class UserData {
     //用户信息
     userId = userData['ID'].toString();
     name = userData['Name'];
-    //FIXME
-    // email = userData['Email'];
-    email = '398928949@qq.com';
+    email = userData['Mailbox'];
     password = userData['Password'];
     isManager = userData['IsManager'];
-    //FIXME
-    // registerTime = userData['RegisterTime'];
-    registerTime = '2020-10-10';
+    registerTime = userData['RegisterTime'];
     //这里的数据是空字符串，所以没有报错，但如果是null，会报错
     // seekHelpList = userData['SeekHelp'].toString().split('#');
     // lendHandList = userData['LendHand'].toString().split('#');

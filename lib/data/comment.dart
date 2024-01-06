@@ -33,6 +33,11 @@ class CommentModel {
   Map<String, List<SingleComment>> commentMap = {};
   List<SingleComment> showCommentList = [];
 
+  void cleanCacheData() {
+    commentMap.clear();
+    showCommentList.clear();
+  }
+
   // list = [type,seekOrLendId,text,sendTime,publisher,publisherId]
   Future<bool> sendAComment(List<String> list) async {
     Map request = {'requestType': 'sendAComment', 'info': list};

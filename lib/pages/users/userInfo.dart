@@ -32,7 +32,7 @@ class _UserBasicInfoState extends State<_UserBasicInfo> {
   Widget build(BuildContext context) {
     UserData userData = context.watch<RootDataModel>().userData;
     Contributions contributions = context.watch<RootDataModel>().contributions;
-    String _parseUserInfo(int option) {
+    String parseUserInfo(int option) {
       if (option == 0) {
         return userData.name;
       } else if (option == 1) {
@@ -49,41 +49,59 @@ class _UserBasicInfoState extends State<_UserBasicInfo> {
     }
 
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black12),
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8)),
-      child: Column(
-        children: List.generate(ConstantData.userInfoIcons.length, (index) {
-          return Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 130,
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.black12),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8)),
+        child: Row(
+          children: [
+            Expanded(
+                child: Column(
+              children:
+                  List.generate(ConstantData.userInfoIcons.length, (index) {
+                return Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      SizedBox(
+                        width: 130,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(width: 10),
+                            Icon(ConstantData.userInfoIcons[index]),
+                            const SizedBox(width: 10),
+                            Text(ConstantData.userInfoMean[index]),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Icon(ConstantData.userInfoIcons[index]),
-                      const SizedBox(width: 10),
-                      Text(ConstantData.userInfoMean[index]),
+                      const Text(':'),
+                      const SizedBox(width: 20),
+                      Text(parseUserInfo(index))
                     ],
                   ),
-                ),
-                const SizedBox(width: 10),
-                const Text(':'),
-                const SizedBox(width: 20),
-                Text(_parseUserInfo(index))
-              ],
-            ),
-          );
-        }),
-      ),
-    );
+                );
+              }),
+            )),
+            Expanded(
+                child: Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<RootDataModel>().logoutWebsite();
+                },
+                style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all(const Size(150, 50)),
+                    backgroundColor:
+                        MaterialStateColor.resolveWith((states) => Colors.red)),
+                child: const Text('Log out'),
+              ),
+            ))
+          ],
+        ));
   }
 }
 
@@ -145,19 +163,19 @@ class _ContributionsState extends State<_Contributions> {
                           style: ButtonStyle(
                             backgroundColor: MaterialStateColor.resolveWith(
                                 (states) => (index ==
-                                        contributions.curYear -
-                                            contributions.registerYear)
+                                        contributions.nowYear -
+                                            contributions.curYear)
                                     ? Colors.blue
                                     : Colors.grey),
                             minimumSize: MaterialStateProperty.all(
                                 const Size(double.infinity, double.infinity)),
                           ),
                           child: Text(
-                            '${contributions.registerYear + index}',
+                            '${contributions.nowYear - index}',
                             style: TextStyle(
                                 color: (index ==
-                                        contributions.curYear -
-                                            contributions.registerYear)
+                                        contributions.nowYear -
+                                            contributions.curYear)
                                     ? Colors.white
                                     : Colors.black),
                           )),

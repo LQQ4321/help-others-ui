@@ -13,7 +13,7 @@ class SingleLendHand {
   late String uploadTime; //发布时间
   // late String remark; //附带的解释信息
   late int like; //点赞数
-  late int ban; //权限
+  // late int ban; //权限
   late int status; //状态
 
   SingleLendHand();
@@ -27,14 +27,14 @@ class SingleLendHand {
     singleLendHand.uploadTime = data['UploadTime'];
     // singleLendHand.remark = data['Remark'];
     singleLendHand.like = data['Like'];
-    singleLendHand.ban = data['Ban'];
+    // singleLendHand.ban = data['Ban'];
     singleLendHand.status = data['Status'];
     return singleLendHand;
   }
 
   @override
   String toString() {
-    return '$lendHandId $seekHelpId $uploadTime $like $ban $status';
+    return '$lendHandId $seekHelpId $uploadTime $like $status';
   }
 }
 
@@ -83,15 +83,24 @@ class ShowInfo {
 
   //seekHelper 和 lendHander 共有的一些东西
   // late String codePath; //代码文件的地址
-  late List<String> codeContent; //代码文件 origin.txt diff.txt (按行读取也许不错)
-  late String remark; //备注信息
+  List<String> codeContent = []; //代码文件 origin.txt diff.txt (按行读取也许不错)
+  String remark = ''; //备注信息
 
   // late int ban;
 //seekHelper私有
-  late String problemLink; //题目链接
+  String problemLink = ''; //题目链接
   ImageProvider imageProvider = MemoryImage(kTransparentImage);
 
 //lendHander私有
+
+  void cleanCacheData() {
+    curRightShowPage = -1;
+    codeShowStatus = 0;
+    rowCodes.clear();
+    codeContent.clear();
+    remark = '';
+    problemLink = '';
+  }
 
   //对代码进行处理
   void switchCodeShowStatus(int codeShowStatus) {

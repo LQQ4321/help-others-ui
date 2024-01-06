@@ -27,6 +27,16 @@ class RootDataModel extends ChangeNotifier {
   CommentModel commentModel = CommentModel();
   Contributions contributions = Contributions();
 
+  void logoutWebsite() {
+    userData.cleanCacheData();
+    seekHelpModel.cleanCacheData();
+    lendHandModel.cleanCacheData();
+    showInfo.cleanCacheData();
+    commentModel.cleanCacheData();
+    contributions.cleanCacheData();
+    notifyListeners();
+  }
+
   //Comment
   Future<dynamic> commentOperate(int option, {String text = ''}) async {
     dynamic flag;
@@ -110,8 +120,6 @@ class RootDataModel extends ChangeNotifier {
         //不存在未解决的求助
         flag = 2;
       } else {
-        debugPrint(
-            '${tempSingleSeekHelp.seekHelpId} ${tempSingleSeekHelp.status} ${tempSingleSeekHelp.seekHelperName} ${tempSingleSeekHelp.uploadTime}');
         flag = await lendHandModel
             .requestLendHandList(tempSingleSeekHelp.seekHelpId);
         if (flag) {
@@ -125,6 +133,44 @@ class RootDataModel extends ChangeNotifier {
           seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
           userData.switchRoute(3);
         }
+      }
+    } else if (option == 4) {
+      //  跟 option == 1 和 option == 3 差不多
+      SingleSeekHelp tempSingleSeekHelp = contributions.seekHelpList[list![0]];
+      flag = await lendHandModel
+          .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+      if (flag) {
+        flag =
+            await showInfo.requestShowData(-2, tempSingleSeekHelp.seekHelpId);
+      }
+      if (flag) {
+        lendHandModel.curSeekHelpId = tempSingleSeekHelp.seekHelpId;
+        seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
+        userData.switchRoute(3);
+      }
+    } else if (option == 5) {
+      //  跟 option == 1,3,4 差不多,多了一个跳转到指定lendHand的步骤
+      SingleSeekHelp tempSingleSeekHelp = contributions.seekHelpList2[list![0]];
+      flag = await lendHandModel
+          .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+      if (flag) {
+        flag =
+            await showInfo.requestShowData(-2, tempSingleSeekHelp.seekHelpId);
+      }
+      if (flag) {
+        for (int i = 0; i < lendHandModel.showLendHandList.length; i++) {
+          if (lendHandModel.showLendHandList[i].seekHelpId ==
+              contributions.seekHelpList2[list[0]].seekHelpId) {
+            flag = await showInfo.requestShowData(
+                i, contributions.lendHandList[list[0]].lendHandId);
+            break;
+          }
+        }
+      }
+      if (flag) {
+        lendHandModel.curSeekHelpId = tempSingleSeekHelp.seekHelpId;
+        seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
+        userData.switchRoute(3);
       }
     }
     notifyListeners();
@@ -164,6 +210,7 @@ class RootDataModel extends ChangeNotifier {
       }
     } else if (option == 2) {
       if (numList![0] == 5) {
+        //如果要切换到用户路由
         flag = await contributions.getContributions(
             userData.userId, userData.registerTime);
         if (flag) {
@@ -220,6 +267,8 @@ class RootDataModel extends ChangeNotifier {
       contributions.parseContributions(numList![0]);
     } else if (option == 2) {
       contributions.setSeekHelpFilterRule(numList![0], numList[1]);
+    } else if (option == 3) {
+      contributions.setLendHandFilterRule(numList![0], numList[1]);
     }
     notifyListeners();
     return flag;

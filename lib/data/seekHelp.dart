@@ -68,6 +68,19 @@ class SeekHelpModel {
   int filterLanguage = 0; //All C C++ Golang
   int filterOrder = 0; //score like time
 
+  void cleanCacheData() {
+    currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    filterStatus = 0;
+    filterScore = 0;
+    filterLike = 0;
+    filterTime = 0;
+    filterLanguage = 0;
+    filterOrder = 0;
+    seekHelpList.clear();
+    showSeekHelpList.clear();
+    singleSeekHelp = SingleSeekHelp();
+  }
+
   // 为了新添加的seekHelp能够显示在列表的第一个，
   // 但是这样子就会导致筛选条件和筛选结果不匹配，因为MyPopupMenu没有依赖外部状态
   void resetFilterRule() {

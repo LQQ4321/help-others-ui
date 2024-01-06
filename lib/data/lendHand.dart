@@ -10,6 +10,11 @@ class LendHandModel {
 
   List<SingleLendHand> showLendHandList = [];
 
+  void cleanCacheData() {
+    curSeekHelpId = '';
+    showLendHandList.clear();
+  }
+
   //0 成功 1 失败 2 codeContent is null 3 remark is empty
   //texts [remark,code type,date,userId]
   Future<int> lendAHand(List<String> texts, List<int>? codeContent) async {

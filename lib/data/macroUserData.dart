@@ -3,50 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:help_them/data/config.dart';
 import 'package:help_them/data/constantData.dart';
+import 'package:help_them/data/macroLendHand.dart';
+import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/functions/functionOne.dart';
 import 'package:intl/intl.dart' as intl;
-
-class UserSeekHelp {
-  late String seekHelpId;
-  late String uploadTime;
-  late String language;
-  late int score;
-  late int like;
-  late int status;
-
-  UserSeekHelp();
-
-  factory UserSeekHelp.fromJson(dynamic data) {
-    UserSeekHelp userSeekHelp = UserSeekHelp();
-    userSeekHelp.seekHelpId = data['ID'].toString();
-    userSeekHelp.uploadTime = data['UploadTime'];
-    userSeekHelp.language = data['Language'];
-    userSeekHelp.score = data['Score'];
-    userSeekHelp.like = data['Like'];
-    userSeekHelp.status = data['Status'];
-    return userSeekHelp;
-  }
-}
-
-class UserLendHand {
-  late String lendHandId;
-  late String seekHelpId;
-  late String uploadTime;
-  late int like;
-  late int status;
-
-  UserLendHand();
-
-  factory UserLendHand.fromJson(dynamic data) {
-    UserLendHand userLendHand = UserLendHand();
-    userLendHand.lendHandId = data['ID'].toString();
-    userLendHand.seekHelpId = data['SeekHelpId'].toString();
-    userLendHand.uploadTime = data['UploadTime'];
-    userLendHand.like = data['Like'];
-    userLendHand.status = data['Status'];
-    return userLendHand;
-  }
-}
 
 class StatusOfDay {
   int seekHelp = 0;
@@ -64,8 +24,9 @@ class Contributions {
 
   //这里可以优化，可以等到需要的时候再初始化
   List<StatusOfDay> contributionTable = [];
-  List<UserSeekHelp> seekHelpList = [];
-  List<UserLendHand> lendHandList = [];
+  List<SingleSeekHelp> seekHelpList = [];
+  List<SingleLendHand> lendHandList = [];
+  List<SingleSeekHelp> seekHelpList2 = [];
 
   //不弄展示列表了，等到需要的时候再生成，不需要的时候就销毁
   //seek help
@@ -78,8 +39,32 @@ class Contributions {
 
   //lend hand
   int lendHandFilterStatus = 0;
+  int lendHandFilterLanguage = 0;
+  bool lendHandFilterScore = false;
   bool lendHandFilterLike = false;
   bool lendHandFilterDate = false;
+  int lendHandMainFilter = 1; //1 score 1 like 2 date
+
+  void cleanCacheData() {
+    curYear = 0;
+    registerYear = -1;
+    contributionTable.clear();
+    seekHelpList.clear();
+    lendHandList.clear();
+    seekHelpList2.clear();
+    seekHelpFilterStatus = 0;
+    seekHelpFilterLanguage = 0;
+    seekHelpFilterScore = false;
+    seekHelpFilterLike = false;
+    seekHelpFilterDate = false;
+    seekHelpMainFilter = 1;
+    lendHandFilterStatus = 0;
+    lendHandFilterLanguage = 0;
+    lendHandFilterScore = false;
+    lendHandFilterLike = false;
+    lendHandFilterDate = false;
+    lendHandMainFilter = 1;
+  }
 
   bool seekHelpIsHigh(int option) {
     if (option == 1) {
@@ -102,12 +87,13 @@ class Contributions {
     } else if (option == 3) {
       seekHelpMainFilter = 3;
       seekHelpFilterDate = !seekHelpFilterDate;
+    } else {
+      seekHelpFilterLanguage = value;
     }
-    seekHelpFilterLanguage = value;
   }
 
-  List<UserSeekHelp> seekHelpFilter() {
-    List<UserSeekHelp> tempList = [];
+  List<SingleSeekHelp> seekHelpFilter() {
+    List<SingleSeekHelp> tempList = [];
     for (int i = 0; i < seekHelpList.length; i++) {
       if (seekHelpFilterStatus != 0 &&
           seekHelpList[i].status + 1 != seekHelpFilterStatus) {
@@ -137,13 +123,82 @@ class Contributions {
     return tempList;
   }
 
+  bool lendHandIsHigh(int option) {
+    if (option == 1) {
+      return lendHandFilterScore;
+    } else if (option == 2) {
+      return lendHandFilterLike;
+    }
+    return lendHandFilterDate;
+  }
+
   void setLendHandFilterRule(int option, int value) {
+    option -= 1;
     if (option == 0) {
       lendHandFilterStatus = value;
     } else if (option == 1) {
-      lendHandFilterLike = (value == 1);
+      lendHandFilterScore = !lendHandFilterScore;
+    } else if (option == 2) {
+      lendHandFilterLike = !lendHandFilterLike;
+    } else if (option == 3) {
+      lendHandFilterDate = !lendHandFilterDate;
+    } else {
+      lendHandFilterLanguage = value;
     }
-    lendHandFilterDate = (value == 1);
+  }
+
+  List<dynamic> lendHandFilter() {
+    List<SingleLendHand> tempList = [];
+    List<SingleSeekHelp> tempList2 = [];
+    for (int i = 0; i < lendHandList.length; i++) {
+      if (lendHandFilterStatus != 0 &&
+          lendHandFilterStatus != lendHandList[i].status + 1) {
+        continue;
+      }
+      //这里依赖一个默认的事实，lendHandList和seekHelpList2是一一对应的
+      if (lendHandFilterLanguage != 0 &&
+          seekHelpList2[i].language !=
+              FunctionOne.switchLanguage(lendHandFilterLanguage)) {
+        continue;
+      }
+      tempList.add(lendHandList[i]);
+    }
+    if (lendHandMainFilter == 1) {
+      tempList.sort((a, b) {
+        int aScore = 0;
+        int bScore = 0;
+        for (int i = 0; i < seekHelpList2.length; i++) {
+          if (seekHelpList2[i].seekHelpId == a.seekHelpId) {
+            aScore = seekHelpList2[i].score;
+          }
+          if (seekHelpList2[i].seekHelpId == b.seekHelpId) {
+            bScore = seekHelpList2[i].score;
+          }
+        }
+        return (aScore - bScore) * (lendHandFilterScore ? -1 : 1);
+      });
+    } else if (lendHandMainFilter == 2) {
+      tempList
+          .sort((a, b) => (a.like - b.like) * (lendHandFilterLike ? -1 : 1));
+    } else {
+      tempList.sort((a, b) =>
+          (DateTime.parse(a.uploadTime)
+                  .difference(DateTime.parse(b.uploadTime)))
+              .inSeconds *
+          (seekHelpFilterDate ? -1 : 1));
+    }
+    for (int i = 0; i < tempList.length; i++) {
+      for (int j = 0; j < seekHelpList2.length; j++) {
+        if (seekHelpList2[j].seekHelpId == tempList[i].seekHelpId) {
+          tempList2.add(seekHelpList2[j]);
+          break;
+        }
+      }
+    }
+    List<dynamic> result = [];
+    result.add(tempList);
+    result.add(tempList2);
+    return result;
   }
 
   //这个函数应该只调用一次
@@ -194,6 +249,7 @@ class Contributions {
   void parseContributions(int newYear) {
     contributionsOfYear = 0;
     newYear += registerYear;
+    newYear = nowYear - newYear;
     if (curYear == newYear) {
       return;
     }
@@ -259,23 +315,16 @@ class Contributions {
   void _fromJson(dynamic data) {
     List<dynamic> tempList = data['seekHelpList'];
     seekHelpList = List.generate(tempList.length, (index) {
-      return UserSeekHelp.fromJson(tempList[index]);
+      return SingleSeekHelp.fromJson(tempList[index]);
     });
+    tempList = data['seekHelpList2'];
+    seekHelpList2 = List.generate(tempList.length, (index) {
+      return SingleSeekHelp.fromJson(tempList[index]);
+    });
+
     tempList = data['lendHandList'];
     lendHandList = List.generate(tempList.length, (index) {
-      return UserLendHand.fromJson(tempList[index]);
-    });
-    //TODO 因为没有数据，这里随机生成一点数据
-    seekHelpList = List.generate(20, (index) {
-      UserSeekHelp userSeekHelp = UserSeekHelp();
-      int rad = Random().nextInt(3);
-      userSeekHelp.uploadTime = '2024-01-0$rad 10:10';
-      userSeekHelp.like = rad;
-      userSeekHelp.score = rad;
-      userSeekHelp.status = index % 2;
-      userSeekHelp.language = ConstantData
-          .supportedLanguages[rad % ConstantData.supportedLanguages.length];
-      return userSeekHelp;
+      return SingleLendHand.fromJson(tempList[index]);
     });
   }
 }
