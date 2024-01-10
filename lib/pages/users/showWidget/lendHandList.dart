@@ -32,17 +32,23 @@ class _UserLendHandListState extends State<UserLendHandList> {
         children: [
           const _LendHandListTopBar(),
           Expanded(
-              child: ListView.builder(
-                  itemExtent: 50,
-                  itemCount: lendHandList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _LendHandListBody(
-                        //不懂能不能直接转换
-                        // singleLendHand: tempList[0][index],
-                        singleLendHand: lendHandList[index],
-                        singleSeekHelp: tempList[1][index],
-                        listId: index);
-                  }))
+              child: lendHandList.isEmpty
+                  ? const Center(
+                      child: Text('Nonexistent data',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600)))
+                  : ListView.builder(
+                      itemExtent: 50,
+                      itemCount: lendHandList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _LendHandListBody(
+                            //不懂能不能直接转换
+                            // singleLendHand: tempList[0][index],
+                            singleLendHand: lendHandList[index],
+                            singleSeekHelp: tempList[1][index]);
+                      }))
         ],
       ),
     );
@@ -77,8 +83,8 @@ class _LendHandListTopBarState extends State<_LendHandListTopBar> {
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 width: 130,
                 child: ElevatedButton(
-                    onPressed: () async {
-                      await context
+                    onPressed: () {
+                      context
                           .read<RootDataModel>()
                           .contributionOperate(3, numList: [index, 0]);
                     },
@@ -122,14 +128,10 @@ class _LendHandListTopBarState extends State<_LendHandListTopBar> {
 
 class _LendHandListBody extends StatefulWidget {
   const _LendHandListBody(
-      {Key? key,
-      required this.singleLendHand,
-      required this.singleSeekHelp,
-      required this.listId})
+      {Key? key, required this.singleLendHand, required this.singleSeekHelp})
       : super(key: key);
   final SingleLendHand singleLendHand;
   final SingleSeekHelp singleSeekHelp;
-  final int listId;
 
   @override
   State<_LendHandListBody> createState() => _LendHandListBodyState();
@@ -158,9 +160,10 @@ class _LendHandListBodyState extends State<_LendHandListBody> {
           border: Border(bottom: BorderSide(color: Colors.black12))),
       child: TextButton(
           onPressed: () async {
-            bool flag = await context
-                .read<RootDataModel>()
-                .lendHand(5, list: [widget.listId]);
+            bool flag = await context.read<RootDataModel>().lendHand(5, list2: [
+              widget.singleLendHand.seekHelpId,
+              widget.singleLendHand.lendHandId
+            ]);
             if (!flag) {
               ToastOne.oneToast(ErrorParse.getErrorMessage(1));
             }

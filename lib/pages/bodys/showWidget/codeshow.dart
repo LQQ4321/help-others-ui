@@ -83,7 +83,7 @@ class _TopBarState extends State<_TopBar> {
                   children: [
                     const SizedBox(width: 50),
                     const Text('Unified', style: TextStyle(color: Colors.grey)),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Switch(
                         value: showInfo.codeShowStatus == 1,
                         activeColor: Colors.black45,
@@ -92,7 +92,7 @@ class _TopBarState extends State<_TopBar> {
                               .read<RootDataModel>()
                               .showOperate(2, list: [(value ? 1 : 2)]);
                         }),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     const Text('Only succor',
                         style: TextStyle(color: Colors.grey)),
                     const SizedBox(width: 50),

@@ -84,11 +84,11 @@ class _BodyState extends State<_Body> {
                       .isEmpty
                   ? const Center(
                       child: Text(
-                        'Nonexistent data',
+                        'No call for help today',
                         style: TextStyle(
                             color: Colors.grey,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w800),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600),
                       ),
                     )
                   : const _BodyInternalList()),

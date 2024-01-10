@@ -56,9 +56,6 @@ class SeekHelpModel {
   //当前正在浏览的seekHelp
   SingleSeekHelp singleSeekHelp = SingleSeekHelp();
 
-  //当前正在浏览的是哪个seekHelp的详细信息
-  // int curSeekHelpIndex = -1;
-
   // 当前正在浏览的日期
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   int filterStatus = 0; //All Unsolved Resolved
@@ -184,12 +181,11 @@ class SeekHelpModel {
       debugPrint(e.toString());
       return 8;
     }
-    //FIXME 这里的10应该修改为用户的总score
     if (moneyReward >= 100) {
       return 5;
     } else if (moneyReward <= 0) {
       return 6;
-    } else if (moneyReward > 10) {
+    } else if (moneyReward > userScore) {
       return 7;
     }
     FormData formData = FormData.fromMap({

@@ -29,22 +29,33 @@ class _CommentDialogState extends State<CommentDialog> {
                     bottom: BorderSide(color: Color(0xffe7e8ec), width: 1.0))),
             child: const _Title(),
           ),
-          Expanded(child: LayoutBuilder(builder: (context, constraints) {
-            return Container(
-              width: constraints.maxWidth * 0.8,
-              color: Colors.grey[100],
-              child: ListView.builder(
-                  itemCount: commentModel.showCommentList.length,
-                  itemExtent: 90,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _CommentCell(
-                      sendTime: commentModel.showCommentList[index].sendTime,
-                      senderName: commentModel.showCommentList[index].publisher,
-                      sendContent: commentModel.showCommentList[index].text,
-                    );
-                  }),
-            );
-          }))
+          Expanded(
+              child: commentModel.showCommentList.isEmpty
+                  ? const Center(
+                      child: Text('Nonexistent data',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600)))
+                  : LayoutBuilder(builder: (context, constraints) {
+                      return Container(
+                        width: constraints.maxWidth * 0.8,
+                        color: Colors.grey[100],
+                        child: ListView.builder(
+                            itemCount: commentModel.showCommentList.length,
+                            itemExtent: 90,
+                            itemBuilder: (BuildContext context, int index) {
+                              return _CommentCell(
+                                sendTime: commentModel
+                                    .showCommentList[index].sendTime,
+                                senderName: commentModel
+                                    .showCommentList[index].publisher,
+                                sendContent:
+                                    commentModel.showCommentList[index].text,
+                              );
+                            }),
+                      );
+                    }))
         ],
       ),
     );

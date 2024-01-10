@@ -14,6 +14,7 @@ enum ErrorType {
   usernameOrEmailAlreadyExists,
   usernameOrEmailNotExists,
   dataRequestFailure,
+  operationIsTooFrequent,
 }
 
 Map<int, ErrorType> errorMap = {
@@ -29,6 +30,7 @@ Map<int, ErrorType> errorMap = {
   10: ErrorType.usernameOrEmailAlreadyExists,
   11: ErrorType.usernameOrEmailNotExists,
   12: ErrorType.dataRequestFailure,
+  13: ErrorType.operationIsTooFrequent,
 };
 
 class ErrorParse {

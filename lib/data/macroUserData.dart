@@ -220,7 +220,7 @@ class Contributions {
         return false;
       }
       _fromJson(value.data);
-      parseContributions(nowYear - registerYear);
+      parseContributions(0);
       return true;
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
@@ -248,7 +248,6 @@ class Contributions {
 
   void parseContributions(int newYear) {
     contributionsOfYear = 0;
-    newYear += registerYear;
     newYear = nowYear - newYear;
     if (curYear == newYear) {
       return;

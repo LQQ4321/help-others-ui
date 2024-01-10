@@ -5,6 +5,7 @@ import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/seekAHelp.dart';
 import 'package:help_them/pages/bodys/seekHelpList.dart';
 import 'package:help_them/pages/bodys/showRoute.dart';
+import 'package:help_them/pages/helps/helpOne.dart';
 import 'package:help_them/pages/users/user.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +35,8 @@ class Home extends StatelessWidget {
                 return const SeekAHelp(isSeekHelp: false);
               } else if (pageId == 5) {
                 return const User();
+              }else if(pageId == 6){
+                return const HelpOne();
               }
               return Container();
             },
@@ -56,17 +59,19 @@ class _TopBar extends StatelessWidget {
               Border(bottom: BorderSide(color: Color(0xffe7e8ec), width: 1.0))),
       child: Stack(
         children: [
-          const Align(
+          Align(
               alignment: Alignment.centerLeft,
               child: Row(children: [
-                SizedBox(width: 20),
-                Text(
+                const SizedBox(width: 20),
+                TextButton(onPressed: ()async{
+                  await context.read<RootDataModel>().userOperate(2,numList: [6]);
+                }, child: const Text(
                   'help others',
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w700,
                       fontSize: 16),
-                )
+                ))
               ])),
           Align(
               alignment: Alignment.center,

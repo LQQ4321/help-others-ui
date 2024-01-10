@@ -29,6 +29,10 @@ class _SeekAHelpState extends State<SeekAHelp> {
   String _imageType = '';
   String _codeType = '';
   String language = '';
+  int _codeFileSizeLimit = 0;
+  int _imageFileSizeLimit = 0;
+  int _codeFileSize = 0;
+  int _imageFileSize = 0;
 
   @override
   void initState() {
@@ -53,6 +57,10 @@ class _SeekAHelpState extends State<SeekAHelp> {
     if (!widget.isSeekHelp) {
       language =
           context.watch<RootDataModel>().seekHelpModel.singleSeekHelp.language;
+      _codeFileSizeLimit =
+          context.watch<RootDataModel>().userData.maxUploadFileSize;
+      _imageFileSizeLimit =
+          context.watch<RootDataModel>().userData.maxUploadImageSize;
     }
     return Container(
       margin: const EdgeInsets.only(left: 150, right: 150),
@@ -84,7 +92,9 @@ class _SeekAHelpState extends State<SeekAHelp> {
                               child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    index == 0 ? _codeFileInfo : _imageFileInfo,
+                                    index == 0
+                                        ? '$_codeFileInfo (limit:$_codeFileSizeLimit MB)'
+                                        : '$_imageFileInfo (limit:$_imageFileSizeLimit MB)',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -129,8 +139,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       _imageFileInfo = fileInfo;
                                       _imageContent = filePickerResult
                                           .files.single.bytes as List<int>;
-                                      debugPrint(_imageType);
-                                      debugPrint(_imageFileInfo);
+                                      _imageFileSize =
+                                          filePickerResult.files.single.size;
                                     } else {
                                       _codeType = filePickerResult
                                           .files.single.name
@@ -139,8 +149,8 @@ class _SeekAHelpState extends State<SeekAHelp> {
                                       _codeFileInfo = fileInfo;
                                       _codeContent = filePickerResult
                                           .files.single.bytes as List<int>;
-                                      debugPrint(_codeType);
-                                      debugPrint(_codeFileInfo);
+                                      _codeFileSize =
+                                          filePickerResult.files.single.size;
                                     }
                                   });
                                 },
@@ -198,6 +208,20 @@ class _SeekAHelpState extends State<SeekAHelp> {
                               numList: [widget.isSeekHelp ? 1 : 3]);
                         }
                       } else {
+                        if (_codeFileSize > (_codeFileSizeLimit << 20)) {
+                          ToastOne.oneToast([
+                            'Operate fail',
+                            'The uploaded file is too large'
+                          ]);
+                          return;
+                        } else if (widget.isSeekHelp &&
+                            (_imageFileSize > (_imageFileSizeLimit << 20))) {
+                          ToastOne.oneToast([
+                            'Operate fail',
+                            'The uploaded image is too large'
+                          ]);
+                          return;
+                        }
                         int flag = 0;
                         if (!widget.isSeekHelp) {
                           flag = await context.read<RootDataModel>().lendHand(2,

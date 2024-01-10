@@ -29,15 +29,20 @@ class _UserSeekHelpListState extends State<UserSeekHelpList> {
         children: [
           const _SeekHelpListTopBar(),
           Expanded(
-              child: ListView.builder(
-                  itemExtent: 50,
-                  itemCount: showUserSeekHelpList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _SeekHelpListBody(
-                      userSeekHelp: showUserSeekHelpList[index],
-                      listId: index,
-                    );
-                  }))
+              child: showUserSeekHelpList.isEmpty
+                  ? const Center(
+                      child: Text('Nonexistent data',
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600)))
+                  : ListView.builder(
+                      itemExtent: 50,
+                      itemCount: showUserSeekHelpList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _SeekHelpListBody(
+                            userSeekHelp: showUserSeekHelpList[index]);
+                      }))
         ],
       ),
     );
@@ -113,11 +118,9 @@ class _SeekHelpListTopBarState extends State<_SeekHelpListTopBar> {
 }
 
 class _SeekHelpListBody extends StatefulWidget {
-  const _SeekHelpListBody(
-      {Key? key, required this.userSeekHelp, required this.listId})
+  const _SeekHelpListBody({Key? key, required this.userSeekHelp})
       : super(key: key);
   final SingleSeekHelp userSeekHelp;
-  final int listId;
 
   @override
   State<_SeekHelpListBody> createState() => _SeekHelpListBodyState();
@@ -146,7 +149,7 @@ class _SeekHelpListBodyState extends State<_SeekHelpListBody> {
           onPressed: () async {
             bool flag = await context
                 .read<RootDataModel>()
-                .lendHand(4, list: [widget.listId]);
+                .lendHand(4, list2: [widget.userSeekHelp.seekHelpId]);
             if (!flag) {
               ToastOne.oneToast(ErrorParse.getErrorMessage(1));
             }

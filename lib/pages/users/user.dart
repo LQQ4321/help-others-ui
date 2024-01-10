@@ -27,7 +27,7 @@ class _UserState extends State<User> {
                   blurRadius: 2.0,
                 )
               ],
-              borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(8)),
           padding:
               const EdgeInsets.only(top: 20, bottom: 20, left: 10, right: 10),
           child: Column(

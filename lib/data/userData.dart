@@ -27,8 +27,9 @@ class UserData {
   late int score; //用户的总分值
   //网站的配置信息，也放在这里好了，防止RootDataModel太大
   int pageId = 0; //当前浏览的网页
-  late int remainingRecourse; //当天剩余的求助机会
   late int loginDuration; //每次最多可以登录的时间，单位是小时
+  late int maxUploadFileSize;
+  late int maxUploadImageSize;
   late String loginTime; //登录时间
 
   void cleanCacheData() {
@@ -305,8 +306,6 @@ class UserData {
     isManager = userData['IsManager'];
     registerTime = userData['RegisterTime'];
     //这里的数据是空字符串，所以没有报错，但如果是null，会报错
-    // seekHelpList = userData['SeekHelp'].toString().split('#');
-    // lendHandList = userData['LendHand'].toString().split('#');
     seekHelpLikeList = userData['SeekHelpLikeList'].toString().split('#');
     lendHandLikeList = userData['LendHandLikeList'].toString().split('#');
     unsolvedSeekHelpList = List.generate(tempUnsolvedList.length, (index) {
@@ -315,13 +314,14 @@ class UserData {
     // ban = userData['Ban'];
     score = userData['Score'];
     //网站配置信息
-    remainingRecourse = configList[0];
-    loginDuration = configList[1];
+    loginDuration = configList[0];
+    maxUploadFileSize = configList[1];
+    maxUploadImageSize = configList[2];
     loginTime = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
   }
 
   @override
   String toString() {
-    return '$userId $name $isManager $score $remainingRecourse $loginTime';
+    return '$userId $name $isManager $score $loginTime';
   }
 }

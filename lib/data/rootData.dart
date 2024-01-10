@@ -17,8 +17,6 @@ import 'package:intl/intl.dart';
 // 父级好像要实现一个void update方法来处理子级变量的更新
 
 //感觉前一种方法会方便一些
-
-//FIXME 感觉调试的时候浏览器时不时崩一下，应该是网页内存溢出了
 class RootDataModel extends ChangeNotifier {
   UserData userData = UserData();
   SeekHelpModel seekHelpModel = SeekHelpModel();
@@ -77,6 +75,9 @@ class RootDataModel extends ChangeNotifier {
     } else if (option == 2) {
       texts!.add(userData.userId);
       flag = await seekHelpModel.seekAHelp(texts, userData.score, list1, list2);
+      if (flag == 0) {
+        userData.score -= int.parse(texts[1]);
+      }
     } else if (option == 3) {
       seekHelpModel.filterFromRule(order: list1![0], filterRule: list1[1]);
     } else if (option == 4) {
@@ -108,7 +109,6 @@ class RootDataModel extends ChangeNotifier {
         userData.switchRoute(3);
       }
     } else if (option == 2) {
-      //FIXME 为什么seekHelp和lendHand可以是同一个人2023-12-21
       list2!.add(seekHelpModel.singleSeekHelp.uploadTime.split(' ')[0]);
       list2.add(userData.userId);
       flag = await lendHandModel.lendAHand(list2, list);
@@ -136,39 +136,57 @@ class RootDataModel extends ChangeNotifier {
       }
     } else if (option == 4) {
       //  跟 option == 1 和 option == 3 差不多
-      SingleSeekHelp tempSingleSeekHelp = contributions.seekHelpList[list![0]];
-      flag = await lendHandModel
-          .requestLendHandList(tempSingleSeekHelp.seekHelpId);
-      if (flag) {
-        flag =
-            await showInfo.requestShowData(-2, tempSingleSeekHelp.seekHelpId);
+      SingleSeekHelp? tempSingleSeekHelp;
+      for (int i = 0; i < contributions.seekHelpList.length; i++) {
+        if (contributions.seekHelpList[i].seekHelpId == list2![0]) {
+          tempSingleSeekHelp = contributions.seekHelpList[i];
+          break;
+        }
+      }
+      if (tempSingleSeekHelp != null) {
+        flag = await lendHandModel
+            .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+      } else {
+        flag = false;
       }
       if (flag) {
-        lendHandModel.curSeekHelpId = tempSingleSeekHelp.seekHelpId;
+        flag =
+            await showInfo.requestShowData(-2, tempSingleSeekHelp!.seekHelpId);
+      }
+      if (flag) {
+        lendHandModel.curSeekHelpId = tempSingleSeekHelp!.seekHelpId;
         seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
         userData.switchRoute(3);
       }
     } else if (option == 5) {
       //  跟 option == 1,3,4 差不多,多了一个跳转到指定lendHand的步骤
-      SingleSeekHelp tempSingleSeekHelp = contributions.seekHelpList2[list![0]];
-      flag = await lendHandModel
-          .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+      SingleSeekHelp? tempSingleSeekHelp;
+      for (int i = 0; i < contributions.seekHelpList2.length; i++) {
+        if (contributions.seekHelpList2[i].seekHelpId == list2![0]) {
+          tempSingleSeekHelp = contributions.seekHelpList2[i];
+          break;
+        }
+      }
+      if (tempSingleSeekHelp != null) {
+        flag = await lendHandModel
+            .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+      } else {
+        flag = false;
+      }
       if (flag) {
         flag =
-            await showInfo.requestShowData(-2, tempSingleSeekHelp.seekHelpId);
+            await showInfo.requestShowData(-2, tempSingleSeekHelp!.seekHelpId);
       }
       if (flag) {
         for (int i = 0; i < lendHandModel.showLendHandList.length; i++) {
-          if (lendHandModel.showLendHandList[i].seekHelpId ==
-              contributions.seekHelpList2[list[0]].seekHelpId) {
-            flag = await showInfo.requestShowData(
-                i, contributions.lendHandList[list[0]].lendHandId);
+          if (lendHandModel.showLendHandList[i].seekHelpId == list2![1]) {
+            flag = await showInfo.requestShowData(i, list2[1]);
             break;
           }
         }
       }
       if (flag) {
-        lendHandModel.curSeekHelpId = tempSingleSeekHelp.seekHelpId;
+        lendHandModel.curSeekHelpId = tempSingleSeekHelp!.seekHelpId;
         seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
         userData.switchRoute(3);
       }
@@ -261,7 +279,8 @@ class RootDataModel extends ChangeNotifier {
     return flag;
   }
 
-  Future<dynamic> contributionOperate(int option, {List<int>? numList}) async {
+  //把Future<dynamic>换成dynamic看看
+  dynamic contributionOperate(int option, {List<int>? numList}) {
     dynamic flag;
     if (option == 1) {
       contributions.parseContributions(numList![0]);

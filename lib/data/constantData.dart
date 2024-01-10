@@ -107,7 +107,7 @@ class ConstantData {
     'verification code error',
     'The user name or password already exists',
     'The user name or password not exists',
-    'Send too often, please wait 10 minutes'
+    'Send too often, please wait 10 minutes',
   ];
 
   static const List<List<String>> seekAHelpPromptMessage = [
@@ -130,6 +130,21 @@ class ConstantData {
     ['Money reward error', 'The money reward is beyond your reach.'],
     ['Money reward error', 'The money reward is not an integer.']
   ];
+
+  static const List<String> whyHelpOthers = [
+    '这个网站是干嘛的',
+    '我可以只求助别人而不帮助别人吗',
+    '为什么创建该网站'
+  ];
+
+  static const List<String> answerHelpOthers = [
+    '这是一个面向算法竞赛初学者的网站，可以将自己找不出问题的代码提交上来，会有志愿者们帮助你寻找程序中的潜在bugs',
+    '这是不被允许的，用户创建账号后，会有数值为3的基础分，每次寻求帮助都要至少消耗数值为一的分数，当你的分值为零后，将不能求助',
+    '目的是帮助算法初学者寻找bugs，有学习算法的朋友应该能够体会，有时候写完一个不太长的程序，然后提交运行，'
+        '往往会得到一个不是Accepted的返回结果，然后开始debug，但是这对于初学者而言往往需要大量的时间，'
+        '如果有高水平的人能够帮忙，那么debug的时间将会大大减少'
+  ];
+
   static const List<List<String>> seekHelpOptionList = [
     ['All', 'Unsolved', 'Resolved'],
     ['High score', 'Low score'],
