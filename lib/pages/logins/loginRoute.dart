@@ -41,13 +41,15 @@ class _LoginRouteState extends State<LoginRoute> {
           return Expanded(
             child: OutlinedButton(
                 onPressed: () {
+                  UserData userData = context.read<RootDataModel>().userData;
                   setState(() {
                     _loginMode = index;
-                    if(_loginMode != 0){
-                      textEditingControllers[0].clear();
-                      textEditingControllers[1].clear();
-                    }else{
-                      UserData userData = context.read<RootDataModel>().userData;
+                    if (_loginMode != 0) {
+                      textEditingControllers[0].text = userData.email;
+                      if (_loginMode == 1) {
+                        textEditingControllers[1].text = userData.password;
+                      }
+                    } else {
                       if (userData.rememberMe) {
                         textEditingControllers[0].text = userData.name;
                         textEditingControllers[1].text = userData.password;
@@ -147,7 +149,9 @@ class _LoginRouteState extends State<LoginRoute> {
         ElevatedButton(
             onPressed: () async {
               int flag = await context.read<RootDataModel>().userOperate(1,
-                  numList: [_loginMode],
+                  numList: [
+                    _loginMode
+                  ],
                   strList: [
                     textEditingControllers[0].text,
                     textEditingControllers[1].text

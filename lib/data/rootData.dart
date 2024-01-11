@@ -71,7 +71,7 @@ class RootDataModel extends ChangeNotifier {
       {List<String>? texts, List<int>? list1, List<int>? list2}) async {
     dynamic flag;
     if (option == 1) {
-      flag = await seekHelpModel.requestSeekHelpList();
+      flag = await seekHelpModel.requestSeekHelpList(userData.isManager);
     } else if (option == 2) {
       texts!.add(userData.userId);
       flag = await seekHelpModel.seekAHelp(texts, userData.score, list1, list2);
@@ -81,10 +81,13 @@ class RootDataModel extends ChangeNotifier {
     } else if (option == 3) {
       seekHelpModel.filterFromRule(order: list1![0], filterRule: list1[1]);
     } else if (option == 4) {
-      flag = await seekHelpModel.requestSeekHelpList(newDate: texts![0]);
+      flag = await seekHelpModel.requestSeekHelpList(userData.isManager,
+          newDate: texts![0]);
       if (flag) {
         userData.switchRoute(1);
       }
+    } else if (option == 5) {
+      flag = await seekHelpModel.changeBan(list1![0]);
     }
     notifyListeners();
     return flag;
@@ -97,7 +100,8 @@ class RootDataModel extends ChangeNotifier {
     if (option == 1) {
       //从列表里面选择seekHelp
       String seekHelpId = seekHelpModel.showSeekHelpList[list![0]].seekHelpId;
-      flag = await lendHandModel.requestLendHandList(seekHelpId);
+      flag = await lendHandModel.requestLendHandList(
+          userData.isManager, seekHelpId);
       if (flag) {
         flag = await showInfo.requestShowData(-2, seekHelpId);
       }
@@ -120,8 +124,8 @@ class RootDataModel extends ChangeNotifier {
         //不存在未解决的求助
         flag = 2;
       } else {
-        flag = await lendHandModel
-            .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+        flag = await lendHandModel.requestLendHandList(
+            userData.isManager, tempSingleSeekHelp.seekHelpId);
         if (flag) {
           flag =
               await showInfo.requestShowData(-2, tempSingleSeekHelp.seekHelpId);
@@ -144,8 +148,8 @@ class RootDataModel extends ChangeNotifier {
         }
       }
       if (tempSingleSeekHelp != null) {
-        flag = await lendHandModel
-            .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+        flag = await lendHandModel.requestLendHandList(
+            userData.isManager, tempSingleSeekHelp.seekHelpId);
       } else {
         flag = false;
       }
@@ -168,8 +172,8 @@ class RootDataModel extends ChangeNotifier {
         }
       }
       if (tempSingleSeekHelp != null) {
-        flag = await lendHandModel
-            .requestLendHandList(tempSingleSeekHelp.seekHelpId);
+        flag = await lendHandModel.requestLendHandList(
+            userData.isManager, tempSingleSeekHelp.seekHelpId);
       } else {
         flag = false;
       }
@@ -190,6 +194,8 @@ class RootDataModel extends ChangeNotifier {
         seekHelpModel.singleSeekHelp = tempSingleSeekHelp;
         userData.switchRoute(3);
       }
+    } else if (option == 6) {
+      flag = await lendHandModel.changeBan(showInfo.curRightShowPage);
     }
     notifyListeners();
     return flag;
@@ -224,7 +230,9 @@ class RootDataModel extends ChangeNotifier {
     if (option == 1) {
       flag = await userData.login(numList![0], strList![0], strList[1]);
       if (flag == 0) {
-        flag = (await seekHelpModel.requestSeekHelpList()) ? 0 : 12;
+        flag = (await seekHelpModel.requestSeekHelpList(userData.isManager))
+            ? 0
+            : 12;
       }
     } else if (option == 2) {
       if (numList![0] == 5) {
@@ -338,7 +346,7 @@ class RootDataModel extends ChangeNotifier {
     }
     //前一步执行正确才有必要执行下一步，相当于stream,所以这一个初始化过程中的网络请求是串行化的,可能有点慢
     if (flag) {
-      flag = await seekHelpModel.requestSeekHelpList();
+      flag = await seekHelpModel.requestSeekHelpList(userData.isManager);
     }
     if (flag) {}
     //感觉没有必要，因为此时还没有任何界面使用到这些数据

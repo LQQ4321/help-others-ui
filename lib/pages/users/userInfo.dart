@@ -34,7 +34,7 @@ class _UserBasicInfoState extends State<_UserBasicInfo> {
     Contributions contributions = context.watch<RootDataModel>().contributions;
     String parseUserInfo(int option) {
       if (option == 0) {
-        return userData.name;
+        return '${userData.name} (${userData.ban == 1 ? 'free' : 'ban'})';
       } else if (option == 1) {
         return userData.email;
       } else if (option == 2) {

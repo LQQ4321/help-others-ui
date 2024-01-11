@@ -16,7 +16,7 @@ class SingleSeekHelp {
   // late int maxCommit; //最多发布多少评论
   late int score; //悬赏的分值
   late int like; //点赞数
-  // late int ban; //求助的权限
+  late int ban; //求助的权限
   late int status; //求助的状态
 
   SingleSeekHelp();
@@ -34,7 +34,7 @@ class SingleSeekHelp {
     // singleSeekHelp.maxCommit = data['MaxComment'];
     singleSeekHelp.score = data['Score'];
     singleSeekHelp.like = data['Like'];
-    // singleSeekHelp.ban = data['Ban'];
+    singleSeekHelp.ban = data['Ban'];
     singleSeekHelp.status = data['Status'];
     return singleSeekHelp;
   }
@@ -64,6 +64,7 @@ class SeekHelpModel {
   int filterTime = 0; //Late Early
   int filterLanguage = 0; //All C C++ Golang
   int filterOrder = 0; //score like time
+  bool isManager = false;
 
   void cleanCacheData() {
     currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -135,12 +136,43 @@ class SeekHelpModel {
     }
   }
 
-  Future<bool> requestSeekHelpList({String? newDate}) async {
+  Future<bool> changeBan(int rowId) async {
+    Map request = {
+      'requestType': 'changeBan',
+      'info': [
+        'seekHelp',
+        showSeekHelpList[rowId].seekHelpId,
+        showSeekHelpList[rowId].ban == 0 ? '1' : '0'
+      ]
+    };
+    return await Config.dio
+        .post(Config.requestJson, data: request)
+        .then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        return false;
+      }
+      for (int i = 0; i < seekHelpList.length; i++) {
+        if (seekHelpList[i].seekHelpId == showSeekHelpList[rowId].seekHelpId) {
+          showSeekHelpList[rowId].ban =
+              (showSeekHelpList[rowId].ban == 0 ? 1 : 0);
+          seekHelpList[i].ban = showSeekHelpList[rowId].ban;
+          break;
+        }
+      }
+      return true;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return false;
+    });
+  }
+
+  Future<bool> requestSeekHelpList(bool isManager, {String? newDate}) async {
+    this.isManager = isManager;
     //请求成功以后才应该改变当前currentDate
     String requestDate = newDate ?? currentDate;
     Map request = {
       'requestType': 'requestList',
-      'info': ['seekHelp', requestDate]
+      'info': ['seekHelp', isManager.toString(), requestDate]
     };
     bool flag =
         await Config.dio.post(Config.requestJson, data: request).then((value) {
@@ -216,7 +248,7 @@ class SeekHelpModel {
     //如果请求成功，并且当前浏览列表的日期就是当天，那么就向数据申请更新后的数据，而不是本地更新(容易出错)
     if (flag == 0 &&
         currentDate == DateFormat('yyyy-MM-dd').format(DateTime.now())) {
-      flag = (await requestSeekHelpList()) ? 0 : 1;
+      flag = (await requestSeekHelpList(isManager)) ? 0 : 1;
     }
     return flag;
   }

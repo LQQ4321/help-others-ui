@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/others/userRank.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/functions/functionTwo.dart';
 import 'package:help_them/macroWidgets/dialogOne.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/seekAHelp.dart';
 import 'package:help_them/pages/bodys/seekHelpList.dart';
 import 'package:help_them/pages/bodys/showRoute.dart';
 import 'package:help_them/pages/helps/helpOne.dart';
+import 'package:help_them/pages/others/userRank.dart';
 import 'package:help_them/pages/users/user.dart';
 import 'package:provider/provider.dart';
 
@@ -35,8 +38,10 @@ class Home extends StatelessWidget {
                 return const SeekAHelp(isSeekHelp: false);
               } else if (pageId == 5) {
                 return const User();
-              }else if(pageId == 6){
+              } else if (pageId == 6) {
                 return const HelpOne();
+              } else if (pageId == 7) {
+                return const UserRankRoute();
               }
               return Container();
             },
@@ -63,15 +68,19 @@ class _TopBar extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Row(children: [
                 const SizedBox(width: 20),
-                TextButton(onPressed: ()async{
-                  await context.read<RootDataModel>().userOperate(2,numList: [6]);
-                }, child: const Text(
-                  'help others',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16),
-                ))
+                TextButton(
+                    onPressed: () async {
+                      await context
+                          .read<RootDataModel>()
+                          .userOperate(2, numList: [6]);
+                    },
+                    child: const Text(
+                      'help others',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16),
+                    ))
               ])),
           Align(
               alignment: Alignment.center,
@@ -140,7 +149,22 @@ class _TopBar extends StatelessWidget {
                     },
                     splashRadius: 20,
                     icon: const Icon(Icons.handshake_outlined)),
-                const SizedBox(width: 10),
+                const SizedBox(width: 5),
+                IconButton(
+                    onPressed: () async {
+                      bool flag =
+                          await context.read<UserRank>().requestUserRank();
+                      if (!flag) {
+                        ToastOne.oneToast(ErrorParse.getErrorMessage(1));
+                      } else {
+                        context
+                            .read<RootDataModel>()
+                            .userOperate(2, numList: [7]);
+                      }
+                    },
+                    splashRadius: 20,
+                    icon: const Icon(Icons.trending_up)),
+                const SizedBox(width: 5),
                 IconButton(
                     onPressed: () async {
                       await context
@@ -149,7 +173,7 @@ class _TopBar extends StatelessWidget {
                     },
                     splashRadius: 20,
                     icon: const Icon(Icons.person_outline)),
-                const SizedBox(width: 10),
+                const SizedBox(width: 5),
               ],
             ),
           )

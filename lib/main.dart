@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:help_them/data/others/userRank.dart';
 import 'package:help_them/data/rootData.dart';
 import 'package:help_them/pages/home.dart';
 import 'package:help_them/pages/logins/login.dart';
@@ -13,6 +14,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: rootDataModel),
+      ChangeNotifierProvider(create: (_) => UserRank())
     ],
     child: const MyApp(),
   ));
@@ -31,7 +33,18 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         body: context.watch<RootDataModel>().userData.isLogin
             ? const Home()
-            : const Login(),
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  debugPrint(constraints.toString());
+                  if (constraints.maxWidth < 1280 ||
+                      constraints.maxHeight < 639) {
+                    return const Center(
+                        child: Text(
+                            'The screen is too small, please use a larger display screen.'));
+                  }
+                  return const Login();
+                },
+              ),
       ),
     );
   }

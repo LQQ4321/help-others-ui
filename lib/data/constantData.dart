@@ -153,7 +153,7 @@ class ConstantData {
     ['All', 'C', 'C++', 'Golang']
   ];
   static const List<int> seekHelpProportion = [1, 1, 1, 1, 1];
-  static const List<int> seekHelpManagerProportion = [2, 2, 2, 2, 2, 1, 1, 1];
+  static const List<int> seekHelpManagerProportion = [2, 2, 2, 2, 2, 1];
 
   static const List<String> supportedLanguages = ['C', 'C++', 'Golang'];
   static const List<String> supportedLanguageFiles = ['c', 'cpp', 'go'];

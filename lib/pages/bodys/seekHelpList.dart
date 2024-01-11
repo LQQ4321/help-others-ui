@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:help_them/data/constantData.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/data/seekHelp.dart';
 import 'package:help_them/functions/functionOne.dart';
+import 'package:help_them/functions/functionTwo.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/macroWidgets/widgetOne.dart';
 import 'package:provider/provider.dart';
@@ -140,12 +142,9 @@ class _BodyTopTitle extends StatelessWidget {
                     child: Builder(
                       builder: (context) {
                         if (index > 4) {
-                          return Center(
-                            child: Text(
-                                index == 5
-                                    ? 'Read'
-                                    : (index == 6 ? 'Write' : ''),
-                                style: const TextStyle(
+                          return const Center(
+                            child: Text('Ban',
+                                style: TextStyle(
                                     color: Colors.black54,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600)),
@@ -198,6 +197,10 @@ class _BodyInternalListState extends State<_BodyInternalList> {
     }
     return ListView.separated(
         itemBuilder: (BuildContext context, int rowIndex) {
+          SingleSeekHelp singleSeekHelp = context
+              .watch<RootDataModel>()
+              .seekHelpModel
+              .showSeekHelpList[rowIndex];
           return SizedBox(
             height: 60,
             child: Row(
@@ -229,12 +232,7 @@ class _BodyInternalListState extends State<_BodyInternalList> {
                         padding: const EdgeInsets.all(10),
                         child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                                context
-                                    .watch<RootDataModel>()
-                                    .seekHelpModel
-                                    .showSeekHelpList[rowIndex]
-                                    .seekHelperName,
+                            child: Text(singleSeekHelp.seekHelperName,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -254,30 +252,24 @@ class _BodyInternalListState extends State<_BodyInternalList> {
                             if (index <= 4) {
                               return Text(
                                 FunctionOne.parseSeekHelpListData(
-                                    index,
-                                    context
-                                        .watch<RootDataModel>()
-                                        .seekHelpModel
-                                        .showSeekHelpList[rowIndex]),
+                                    index, singleSeekHelp),
                                 maxLines: 1,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w900, fontSize: 13),
                               );
                             }
-                            if (index == proportion.length - 1) {
-                              return Center(
-                                  child: SizedBox(
-                                width: 40,
-                                height: 30,
-                                child: MyPopupMenu(
-                                  list: const ['Delete'],
-                                  callBack: (a) {},
-                                  iconData: Icons.more_horiz,
-                                  revealText: false,
-                                ),
-                              ));
-                            }
-                            return Switch(value: false, onChanged: (value) {});
+                            return Switch(
+                                value: singleSeekHelp.ban == 1,
+                                activeColor: Colors.redAccent,
+                                onChanged: (value) async {
+                                  bool flag = await context
+                                      .read<RootDataModel>()
+                                      .seekHelp(5, list1: [rowIndex]);
+                                  if (!flag) {
+                                    ToastOne.oneToast(
+                                        ErrorParse.getErrorMessage(1));
+                                  }
+                                });
                           }));
                     }),
                   ),

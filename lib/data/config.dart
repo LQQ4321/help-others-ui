@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class Config {
   // TODO 再服务器上调试应该修改的地方
   // static final dio = Dio();
+
   static final dio =
       Dio(BaseOptions(baseUrl: 'http://127.0.0.1:8080', headers: {
     'Access-Control-Allow-Origin': '*', // 允许来自任何域名的请求
@@ -32,9 +33,9 @@ class Config {
   }
 
   static void openLink(String url) async {
-    if(await canLaunchUrl(Uri.parse(url))){
+    if (await canLaunchUrl(Uri.parse(url))) {
       await launch(url);
-    }else{
+    } else {
       debugPrint('无法打开链接: $url');
     }
   }
@@ -50,4 +51,3 @@ class Config {
     return result;
   }
 }
-

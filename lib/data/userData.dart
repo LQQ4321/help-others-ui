@@ -23,7 +23,7 @@ class UserData {
   //还未解决的seekHelpId列表,到时候random就从里面选
   List<SingleSeekHelp> unsolvedSeekHelpList = [];
 
-  // late int ban; //用户的权限
+  late int ban; //用户的权限
   late int score; //用户的总分值
   //网站的配置信息，也放在这里好了，防止RootDataModel太大
   int pageId = 0; //当前浏览的网页
@@ -311,7 +311,7 @@ class UserData {
     unsolvedSeekHelpList = List.generate(tempUnsolvedList.length, (index) {
       return SingleSeekHelp.fromJson(tempUnsolvedList[index]);
     });
-    // ban = userData['Ban'];
+    ban = userData['Ban'];
     score = userData['Score'];
     //网站配置信息
     loginDuration = configList[0];

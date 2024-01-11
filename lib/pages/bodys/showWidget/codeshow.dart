@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
+import 'package:help_them/functions/functionTwo.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/showWidget/codeHighLight.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,12 @@ class _TopBarState extends State<_TopBar> {
   @override
   Widget build(BuildContext context) {
     ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
+    bool isManager = context.watch<RootDataModel>().userData.isManager;
+    int ban = context
+        .watch<RootDataModel>()
+        .lendHandModel
+        .showLendHandList[showInfo.curRightShowPage]
+        .ban;
     bool isSeekHelp = showInfo.curRightShowPage < 0;
     int codeShowStatus = showInfo.codeShowStatus;
     int codeLines = 0;
@@ -98,23 +105,48 @@ class _TopBarState extends State<_TopBar> {
                     const SizedBox(width: 50),
                   ],
                 ),
-          ClipOval(
-              child: Center(
-                  child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Builder(
-                        builder: (context) {
-                          return TextButton(
-                              onPressed: () async {
-                                ToastOne.smallTip(context, 'Copied');
-                                Clipboard.setData(
-                                    ClipboardData(text: codeText));
-                              },
-                              child: const Icon(Icons.copy,
-                                  size: 20, color: Colors.grey));
-                        },
-                      ))))
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipOval(
+                  child: Center(
+                      child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Builder(
+                            builder: (context) {
+                              return TextButton(
+                                  onPressed: () async {
+                                    ToastOne.smallTip(context, 'Copied');
+                                    Clipboard.setData(
+                                        ClipboardData(text: codeText));
+                                  },
+                                  child: const Icon(Icons.copy,
+                                      size: 20, color: Colors.grey));
+                            },
+                          )))),
+              isManager
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(width: 10),
+                        Switch(
+                            value: ban == 1,
+                            activeColor: Colors.redAccent,
+                            onChanged: (value) async {
+                              bool flag = await context
+                                  .read<RootDataModel>()
+                                  .lendHand(6);
+                              if (!flag) {
+                                ToastOne.oneToast(
+                                    ErrorParse.getErrorMessage(1));
+                              }
+                            })
+                      ],
+                    )
+                  : Container()
+            ],
+          )
         ],
       ),
     );

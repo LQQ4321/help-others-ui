@@ -15,6 +15,29 @@ class LendHandModel {
     showLendHandList.clear();
   }
 
+  Future<bool> changeBan(int rowId) async {
+    Map request = {
+      'requestType': 'changeBan',
+      'info': [
+        'lendHand',
+        showLendHandList[rowId].lendHandId,
+        showLendHandList[rowId].ban == 0 ? '1' : '0'
+      ]
+    };
+    return await Config.dio
+        .post(Config.requestJson, data: request)
+        .then((value) {
+      if (value.data[Config.status] != Config.succeedStatus) {
+        return false;
+      }
+      showLendHandList[rowId].ban = (showLendHandList[rowId].ban == 0 ? 1 : 0);
+      return true;
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+      return false;
+    });
+  }
+
   //0 成功 1 失败 2 codeContent is null 3 remark is empty
   //texts [remark,code type,date,userId]
   Future<int> lendAHand(List<String> texts, List<int>? codeContent) async {
@@ -51,13 +74,13 @@ class LendHandModel {
   }
 
   //请求LendHand的基本数据，具体的文件信息在本次请求中还没有获取
-  Future<bool> requestLendHandList(String seekHelpId) async {
+  Future<bool> requestLendHandList(bool isManager, String seekHelpId) async {
     // if (curSeekHelpId == seekHelpId) {
     //   return true;
     // }
     Map request = {
       'requestType': 'requestList',
-      'info': ['lendHand', seekHelpId]
+      'info': ['lendHand', isManager.toString(), seekHelpId]
     };
     return await Config.dio
         .post(Config.requestJson, data: request)
