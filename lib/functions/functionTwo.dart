@@ -15,6 +15,7 @@ enum ErrorType {
   usernameOrEmailNotExists,
   dataRequestFailure,
   operationIsTooFrequent,
+  theUserIsAboutToBeBlocked,
 }
 
 Map<int, ErrorType> errorMap = {
@@ -31,6 +32,7 @@ Map<int, ErrorType> errorMap = {
   11: ErrorType.usernameOrEmailNotExists,
   12: ErrorType.dataRequestFailure,
   13: ErrorType.operationIsTooFrequent,
+  14: ErrorType.theUserIsAboutToBeBlocked,
 };
 
 class ErrorParse {
@@ -62,6 +64,8 @@ class ErrorParse {
         return [ConstantData.errorTitle[4], ConstantData.errorMessage[0]];
       case 13:
         return [ConstantData.errorTitle[1], ConstantData.errorMessage[11]];
+      case 14:
+        return [ConstantData.errorTitle[5], ConstantData.errorMessage[12]];
     }
     return ['Parse fail', 'Error type not exists and cannot get error message'];
   }

@@ -96,6 +96,7 @@ class _RegisterRouteState extends State<RegisterRoute> {
                 height: 50,
                 child: RectangleInput(
                     textEditingController: textEditingControllers[2],
+                    maxLength: 10,
                     icon: ConstantData.loginOptionIcons[0],
                     labelText: ConstantData.loginOptionTopics[0]),
               ),

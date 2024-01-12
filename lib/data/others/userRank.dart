@@ -16,8 +16,16 @@ class UserRankItem {
     UserRankItem userRankItem = UserRankItem();
     userRankItem.userId = data['ID'].toString();
     userRankItem.name = data['Name'];
-    userRankItem.seekHelpNum = data['SeekHelp'].toString().split('#').length;
-    userRankItem.lendHandNum = data['LendHand'].toString().split('#').length;
+    if (data['SeekHelp'].toString().isEmpty) {
+      userRankItem.seekHelpNum = 0;
+    } else {
+      userRankItem.seekHelpNum = data['SeekHelp'].toString().split('#').length;
+    }
+    if (data['LendHand'].toString().isEmpty) {
+      userRankItem.lendHandNum = 0;
+    } else {
+      userRankItem.lendHandNum = data['LendHand'].toString().split('#').length;
+    }
     userRankItem.score = data['Score'];
     userRankItem.registerTime = data['RegisterTime'];
     return userRankItem;

@@ -163,7 +163,7 @@ class _TopBar extends StatelessWidget {
                       }
                     },
                     splashRadius: 20,
-                    icon: const Icon(Icons.trending_up)),
+                    icon: const Icon(Icons.bar_chart_rounded)),
                 const SizedBox(width: 5),
                 IconButton(
                     onPressed: () async {

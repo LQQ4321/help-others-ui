@@ -219,13 +219,15 @@ class RectangleInput extends StatefulWidget {
   final IconData icon;
   final String labelText;
   final bool eye;
+  final int maxLength;
 
   const RectangleInput(
       {Key? key,
       required this.textEditingController,
       required this.icon,
       required this.labelText,
-      this.eye = false})
+      this.eye = false,
+      this.maxLength = 100})
       : super(key: key);
 
   @override
@@ -273,7 +275,7 @@ class _RectangleInputState extends State<RectangleInput> {
                 controller: widget.textEditingController,
                 obscureText: _obscureText,
                 maxLines: 1,
-                maxLength: 100,
+                maxLength: widget.maxLength,
                 decoration: InputDecoration(
                   counterText: '',
                   border: InputBorder.none,

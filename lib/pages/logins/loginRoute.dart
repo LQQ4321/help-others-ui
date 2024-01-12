@@ -45,10 +45,8 @@ class _LoginRouteState extends State<LoginRoute> {
                   setState(() {
                     _loginMode = index;
                     if (_loginMode != 0) {
-                      textEditingControllers[0].text = userData.email;
-                      if (_loginMode == 1) {
-                        textEditingControllers[1].text = userData.password;
-                      }
+                      textEditingControllers[0].clear();
+                      textEditingControllers[1].clear();
                     } else {
                       if (userData.rememberMe) {
                         textEditingControllers[0].text = userData.name;
@@ -79,6 +77,7 @@ class _LoginRouteState extends State<LoginRoute> {
           child: RectangleInput(
               textEditingController: textEditingControllers[0],
               icon: ConstantData.loginOptionIcons[_loginMode == 0 ? 0 : 1],
+              maxLength: _loginMode == 0 ? 10 : 50,
               labelText:
                   ConstantData.loginOptionTopics[_loginMode == 0 ? 0 : 1]),
         ),

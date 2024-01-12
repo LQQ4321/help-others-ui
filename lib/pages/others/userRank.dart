@@ -65,7 +65,7 @@ class _UserRankItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: rowId % 2 == 0 ? Colors.grey[200] : Colors.black12,
+      color: rowId % 2 == 1 ? Colors.grey[200] : Colors.black12,
       child: Row(
         children: List.generate(_proportion.length, (index) {
           return Expanded(

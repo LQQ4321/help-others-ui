@@ -93,6 +93,8 @@ class ConstantData {
     'Logical error',
     'Operate fail',
     'Request fail',
+    'Login fail',
+    'Formatting error'
   ];
 
   static const List<String> errorMessage = [
@@ -105,9 +107,10 @@ class ConstantData {
     'The two passwords are different',
     'The verification code has expired',
     'verification code error',
-    'The user name or password already exists',
-    'The user name or password not exists',
+    'The user name or mailbox already exists',
+    'The user name or mailbox not exists',
     'Send too often, please wait 10 minutes',
+    'Your account is being suspended',
   ];
 
   static const List<List<String>> seekAHelpPromptMessage = [

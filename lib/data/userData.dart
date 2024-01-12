@@ -208,6 +208,8 @@ class UserData {
           errorCode = 9;
         } else if (errorCode == 4) {
           errorCode = 11;
+        } else if (errorCode == 5) {
+          errorCode = 14;
         }
         return errorCode;
       }
@@ -222,8 +224,6 @@ class UserData {
       return 1;
     });
     if (flag == 0) {
-      // TODO 测试 管理员和用户的区别
-      isManager = false;
       isLogin = true;
       pageId = 1;
     }

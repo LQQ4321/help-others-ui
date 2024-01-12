@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:help_them/data/macroLendHand.dart';
 import 'package:help_them/data/rootData.dart';
-import 'package:help_them/functions/functionTwo.dart';
 import 'package:help_them/macroWidgets/toastOne.dart';
 import 'package:help_them/pages/bodys/showWidget/codeHighLight.dart';
 import 'package:provider/provider.dart';
@@ -19,10 +18,16 @@ class _CodeShowState extends State<CodeShow> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _TopBar(),
+        Container(
+          decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(8), topLeft: Radius.circular(8))),
+          padding: const EdgeInsets.only(left: 10, right: 10),
+          child: const _TopBar(),
+        ),
         Container(height: 1, color: Colors.black12),
         const Expanded(child: CodeHighLight())
-        // const Expanded(child: CodeRowShow())
       ],
     );
   }
@@ -39,12 +44,6 @@ class _TopBarState extends State<_TopBar> {
   @override
   Widget build(BuildContext context) {
     ShowInfo showInfo = context.watch<RootDataModel>().showInfo;
-    bool isManager = context.watch<RootDataModel>().userData.isManager;
-    int ban = context
-        .watch<RootDataModel>()
-        .lendHandModel
-        .showLendHandList[showInfo.curRightShowPage]
-        .ban;
     bool isSeekHelp = showInfo.curRightShowPage < 0;
     int codeShowStatus = showInfo.codeShowStatus;
     int codeLines = 0;
@@ -72,83 +71,49 @@ class _TopBarState extends State<_TopBar> {
         codeLines = showInfo.rowCodes.length;
       }
     }
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(8), topLeft: Radius.circular(8))),
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('$codeLines lines', style: const TextStyle(color: Colors.grey)),
-          isSeekHelp
-              ? Container()
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(width: 50),
-                    const Text('Unified', style: TextStyle(color: Colors.grey)),
-                    const SizedBox(width: 10),
-                    Switch(
-                        value: showInfo.codeShowStatus == 1,
-                        activeColor: Colors.black45,
-                        onChanged: (value) async {
-                          await context
-                              .read<RootDataModel>()
-                              .showOperate(2, list: [(value ? 1 : 2)]);
-                        }),
-                    const SizedBox(width: 10),
-                    const Text('Only succor',
-                        style: TextStyle(color: Colors.grey)),
-                    const SizedBox(width: 50),
-                  ],
-                ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipOval(
-                  child: Center(
-                      child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Builder(
-                            builder: (context) {
-                              return TextButton(
-                                  onPressed: () async {
-                                    ToastOne.smallTip(context, 'Copied');
-                                    Clipboard.setData(
-                                        ClipboardData(text: codeText));
-                                  },
-                                  child: const Icon(Icons.copy,
-                                      size: 20, color: Colors.grey));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('$codeLines lines', style: const TextStyle(color: Colors.grey)),
+        isSeekHelp
+            ? Container()
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(width: 50),
+                  const Text('Unified', style: TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 10),
+                  Switch(
+                      value: showInfo.codeShowStatus == 1,
+                      activeColor: Colors.black45,
+                      onChanged: (value) async {
+                        await context
+                            .read<RootDataModel>()
+                            .showOperate(2, list: [(value ? 1 : 2)]);
+                      }),
+                  const SizedBox(width: 10),
+                  const Text('Only succor',
+                      style: TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 50),
+                ],
+              ),
+        ClipOval(
+            child: Center(
+                child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Builder(
+                      builder: (context) {
+                        return TextButton(
+                            onPressed: () async {
+                              ToastOne.smallTip(context, 'Copied');
+                              Clipboard.setData(ClipboardData(text: codeText));
                             },
-                          )))),
-              isManager
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 10),
-                        Switch(
-                            value: ban == 1,
-                            activeColor: Colors.redAccent,
-                            onChanged: (value) async {
-                              bool flag = await context
-                                  .read<RootDataModel>()
-                                  .lendHand(6);
-                              if (!flag) {
-                                ToastOne.oneToast(
-                                    ErrorParse.getErrorMessage(1));
-                              }
-                            })
-                      ],
-                    )
-                  : Container()
-            ],
-          )
-        ],
-      ),
+                            child: const Icon(Icons.copy,
+                                size: 20, color: Colors.grey));
+                      },
+                    ))))
+      ],
     );
   }
 }

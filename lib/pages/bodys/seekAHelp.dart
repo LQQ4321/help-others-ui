@@ -57,11 +57,11 @@ class _SeekAHelpState extends State<SeekAHelp> {
     if (!widget.isSeekHelp) {
       language =
           context.watch<RootDataModel>().seekHelpModel.singleSeekHelp.language;
-      _codeFileSizeLimit =
-          context.watch<RootDataModel>().userData.maxUploadFileSize;
-      _imageFileSizeLimit =
-          context.watch<RootDataModel>().userData.maxUploadImageSize;
     }
+   _codeFileSizeLimit =
+        context.watch<RootDataModel>().userData.maxUploadFileSize;
+   _imageFileSizeLimit =
+        context.watch<RootDataModel>().userData.maxUploadImageSize;
     return Container(
       margin: const EdgeInsets.only(left: 150, right: 150),
       child: Column(
